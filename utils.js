@@ -46,6 +46,17 @@ const encodeParams = (params) =>
     .map((key) => key + "=" + `%5B${encodeBoard(params[key])}%5D`)
     .join("&");
 
-getBoardData();
-
 /* End of helper functions provided by API provider */
+
+// Get sample data and save for testing
+// const getAndSaveSampleData = async (difficulty = "hard", solve = true) => {
+//   const data = await getBoardData(difficulty, solve);
+
+//   const a = document.createElement("a");
+//   const file = new Blob([data], { type: "application/json" });
+//   a.href = URL.createObjectURL(file);
+//   a.download = `sample-${difficulty}.json`;
+//   a.click();
+// };
+
+// getAndSaveSampleData("hard");
