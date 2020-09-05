@@ -1,4 +1,8 @@
 const body = document.querySelector("body");
+let numMoves = 0;
+let maxMoves;
+let solution;
+let finalBoard;
 
 const generateEmptyBoard = (size = 9) => {
   const board = document.querySelector(".board");
@@ -17,6 +21,7 @@ const generateEmptyBoard = (size = 9) => {
 };
 
 const fillBoardData = (data) => {
+  maxMoves = 0;
   for (let i = 0; i < data.length; i++) {
     for (let j = 0; j < data[i].length; j++) {
       const cell = document.querySelector(`.row${i}.col${j}`);
@@ -26,9 +31,34 @@ const fillBoardData = (data) => {
         cell.innerHTML = val;
       } else {
         cell.classList.add("to-fill");
+        maxMoves++;
       }
     }
   }
+};
+
+const convertBoardToArray = (size = 9) => {
+  const board = [];
+
+  for (let i = 0; i < size; i++) {
+    board[i] = [];
+    for (let j = 0; j < size; j++) {
+      const cell = document.querySelector(`.row${i}.col${j}`);
+      board[i][j] = Number(cell.innerText);
+    }
+  }
+
+  return board;
+};
+
+const checkResults = (withAPI = true) => {
+  finalBoard = convertBoardToArray(9);
+
+  if (withAPI) {
+    return JSON.stringify(finalBoard) === JSON.stringify(solution);
+  }
+
+  return false;
 };
 
 const getDataAndFillBoard = async (difficulty = "hard", solve = true) => {
@@ -37,6 +67,7 @@ const getDataAndFillBoard = async (difficulty = "hard", solve = true) => {
   fillBoardData(board);
 };
 
+/* EVENT LISTENERS AND HANDLERS */
 const deselectCell = () => {
   const selectedCell = document.querySelector(".cell-selected");
 
@@ -54,6 +85,20 @@ const handleSelectCell = (e) => {
   }
 };
 
+const editCell = (cell, value) => {
+  cell.innerHTML = value;
+  if (value) {
+    numMoves++;
+  } else {
+    numMoves--;
+  }
+
+  console.log(`maxMoves: ${maxMoves}, numMoves: ${numMoves}`);
+  if (numMoves === maxMoves) {
+    console.log("results: " + checkResults());
+  }
+};
+
 const handleClick = (e) => {
   if (e.target.classList.contains("to-fill")) {
     handleSelectCell(e);
@@ -64,19 +109,21 @@ const handleClick = (e) => {
 
 const handleKeyPress = (e) => {
   const keyPressed = e.keyCode;
-  console.log(keyPressed);
+  //   console.log(keyPressed);
 
   if (keyPressed >= 49 && keyPressed <= 57) {
     const numPressed = Number(String.fromCharCode(keyPressed));
 
     const selectedCell = document.querySelector(".cell-selected");
     if (selectedCell) {
-      selectedCell.innerHTML = numPressed;
+      editCell(selectedCell, numPressed);
+      //   selectedCell.innerHTML = numPressed;
     }
   } else if (keyPressed === 8) {
     const selectedCell = document.querySelector(".cell-selected");
     if (selectedCell) {
-      selectedCell.innerHTML = "";
+      editCell(selectedCell, "");
+      //   selectedCell.innerHTML = "";
     }
   }
 };
@@ -84,6 +131,7 @@ const handleKeyPress = (e) => {
 body.addEventListener("click", handleClick);
 body.addEventListener("keydown", handleKeyPress);
 
+/* INITIALIZE GAME */
 const sampleData = {
   board: [
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -111,7 +159,8 @@ const sampleData = {
   status: "solved",
 };
 
-/* INITIALIZE GAME */
+solution = sampleData.solution;
+
 generateEmptyBoard();
 // getDataAndFillBoard();
 fillBoardData(sampleData.board);
