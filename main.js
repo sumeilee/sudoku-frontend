@@ -116,10 +116,11 @@ const handleKeyPress = (e) => {
   if (selectedCell) {
     if (keyPressed >= 49 && keyPressed <= 57) {
       editValue = Number(String.fromCharCode(keyPressed));
+      editCell(selectedCell, editValue);
     } else if (keyPressed === 8) {
       editValue = "";
+      editCell(selectedCell, editValue);
     }
-    editCell(selectedCell, editValue);
   }
 };
 
