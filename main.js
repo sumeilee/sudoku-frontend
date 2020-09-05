@@ -109,22 +109,17 @@ const handleClick = (e) => {
 
 const handleKeyPress = (e) => {
   const keyPressed = e.keyCode;
-  //   console.log(keyPressed);
+  let editValue;
 
-  if (keyPressed >= 49 && keyPressed <= 57) {
-    const numPressed = Number(String.fromCharCode(keyPressed));
+  const selectedCell = document.querySelector(".cell-selected");
 
-    const selectedCell = document.querySelector(".cell-selected");
-    if (selectedCell) {
-      editCell(selectedCell, numPressed);
-      //   selectedCell.innerHTML = numPressed;
+  if (selectedCell) {
+    if (keyPressed >= 49 && keyPressed <= 57) {
+      editValue = Number(String.fromCharCode(keyPressed));
+    } else if (keyPressed === 8) {
+      editValue = "";
     }
-  } else if (keyPressed === 8) {
-    const selectedCell = document.querySelector(".cell-selected");
-    if (selectedCell) {
-      editCell(selectedCell, "");
-      //   selectedCell.innerHTML = "";
-    }
+    editCell(selectedCell, editValue);
   }
 };
 
