@@ -1,10 +1,15 @@
+const body = document.querySelector("body");
+
 const generateEmptyBoard = (size = 9) => {
   const board = document.querySelector(".board");
+  let count = 0;
 
   for (let i = 0; i < size; i++) {
     for (let j = 0; j < size; j++) {
       const cell = document.createElement("div");
       cell.setAttribute("class", `board__cell row${i} col${j}`);
+      cell.setAttribute("id", `cell${count}`);
+      count++;
 
       board.appendChild(cell);
     }
@@ -19,6 +24,8 @@ const fillBoardData = (data) => {
 
       if (val) {
         cell.innerHTML = val;
+      } else {
+        cell.classList.add("to-fill");
       }
     }
   }
@@ -29,6 +36,53 @@ const getDataAndFillBoard = async (difficulty = "hard", solve = true) => {
 
   fillBoardData(board);
 };
+
+const deselectCell = () => {
+  const selectedCell = document.querySelector(".cell-selected");
+
+  if (selectedCell && selectedCell.classList) {
+    selectedCell.classList.remove("cell-selected");
+  }
+  return selectedCell;
+};
+
+const handleSelectCell = (e) => {
+  const prevSelectedCell = deselectCell();
+
+  if (!prevSelectedCell || prevSelectedCell.id !== e.target.id) {
+    e.target.classList.add("cell-selected");
+  }
+};
+
+const handleClick = (e) => {
+  if (e.target.classList.contains("to-fill")) {
+    handleSelectCell(e);
+  } else {
+    deselectCell();
+  }
+};
+
+const handleKeyPress = (e) => {
+  const keyPressed = e.keyCode;
+  console.log(keyPressed);
+
+  if (keyPressed >= 49 && keyPressed <= 57) {
+    const numPressed = Number(String.fromCharCode(keyPressed));
+
+    const selectedCell = document.querySelector(".cell-selected");
+    if (selectedCell) {
+      selectedCell.innerHTML = numPressed;
+    }
+  } else if (keyPressed === 8) {
+    const selectedCell = document.querySelector(".cell-selected");
+    if (selectedCell) {
+      selectedCell.innerHTML = "";
+    }
+  }
+};
+
+body.addEventListener("click", handleClick);
+body.addEventListener("keydown", handleKeyPress);
 
 const sampleData = {
   board: [

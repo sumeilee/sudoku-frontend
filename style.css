@@ -42,3 +42,7 @@ body {
 .row6 {
   border-top: 3px solid var(--board-border-color);
 }
+
+.cell-selected {
+  background-color: lightblue;
+}
