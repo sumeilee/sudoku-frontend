@@ -15,12 +15,25 @@ body {
   text-align: center;
 }
 
+.message-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  width: var(--board-width);
+  margin: 10px auto;
+}
+
+.message-bar p {
+  margin: 0;
+}
+
 .board {
   border: 3px solid var(--board-border-color);
   display: inline-grid;
   grid-template-columns: var(--board-grid-config);
   grid-template-rows: var(--board-grid-config);
-  margin: 20px auto;
+  margin: 0 auto;
   width: var(--board-width);
 }
 
@@ -31,15 +44,21 @@ body {
   border: 1px solid var(--board-border-color);
   display: flex;
   justify-content: center;
+
+  // prevent text in other cells from being highlighted when clicking div
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
-.col3,
-.col6 {
+div[data-col="3"],
+div[data-col="6"] {
   border-left: 3px solid var(--board-border-color);
 }
 
-.row3,
-.row6 {
+div[data-row="3"],
+div[data-row="6"] {
   border-top: 3px solid var(--board-border-color);
 }
 

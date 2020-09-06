@@ -1,8 +1,10 @@
 const body = document.querySelector("body");
+const messageBar = document.querySelector(".message-bar");
+
 let numMoves = 0;
 let maxMoves;
 let solution;
-let finalBoard;
+let playerBoard;
 
 const generateEmptyBoard = (size = 9) => {
   const board = document.querySelector(".board");
@@ -11,8 +13,9 @@ const generateEmptyBoard = (size = 9) => {
   for (let i = 0; i < size; i++) {
     for (let j = 0; j < size; j++) {
       const cell = document.createElement("div");
-      cell.setAttribute("class", `board__cell row${i} col${j}`);
-      cell.setAttribute("id", `cell${count}`);
+      cell.setAttribute("class", `board__cell`);
+      cell.setAttribute("data-row", i);
+      cell.setAttribute("data-col", j);
       count++;
 
       board.appendChild(cell);
@@ -24,7 +27,7 @@ const fillBoardData = (data) => {
   maxMoves = 0;
   for (let i = 0; i < data.length; i++) {
     for (let j = 0; j < data[i].length; j++) {
-      const cell = document.querySelector(`.row${i}.col${j}`);
+      const cell = document.querySelector(`[data-row="${i}"][data-col="${j}"]`);
       const val = data[i][j];
 
       if (val) {
@@ -35,30 +38,27 @@ const fillBoardData = (data) => {
       }
     }
   }
-};
-
-const convertBoardToArray = (size = 9) => {
-  const board = [];
-
-  for (let i = 0; i < size; i++) {
-    board[i] = [];
-    for (let j = 0; j < size; j++) {
-      const cell = document.querySelector(`.row${i}.col${j}`);
-      board[i][j] = Number(cell.innerText);
-    }
-  }
-
-  return board;
+  playerBoard = data;
 };
 
 const checkResults = (withAPI = true) => {
-  finalBoard = convertBoardToArray(9);
+  let isCorrect = false;
 
   if (withAPI) {
-    return JSON.stringify(finalBoard) === JSON.stringify(solution);
+    isCorrect = JSON.stringify(playerBoard) === JSON.stringify(solution);
   }
 
-  return false;
+  if (isCorrect) {
+    displayMessage("Good job!");
+  } else {
+    displayMessage("Try again");
+  }
+
+  return isCorrect;
+};
+
+const displayMessage = (msg) => {
+  messageBar.innerHTML = `<p>${msg}</p>`;
 };
 
 const getDataAndFillBoard = async (difficulty = "hard", solve = true) => {
@@ -78,14 +78,22 @@ const deselectCell = () => {
 };
 
 const handleSelectCell = (e) => {
-  const prevSelectedCell = deselectCell();
+  const prevCell = deselectCell();
+  const currentCell = e.target;
 
-  if (!prevSelectedCell || prevSelectedCell.id !== e.target.id) {
+  if (
+    !prevCell ||
+    (prevCell.dataset.row !== currentCell.dataset.row &&
+      prevCell.dataset.col !== currentCell.dataset.col)
+  ) {
     e.target.classList.add("cell-selected");
   }
 };
 
 const editCell = (cell, value) => {
+  const i = cell.dataset.row;
+  const j = cell.dataset.col;
+
   cell.innerHTML = value;
   if (value) {
     numMoves++;
@@ -93,15 +101,21 @@ const editCell = (cell, value) => {
     numMoves--;
   }
 
+  playerBoard[i][j] = Number(value);
+
   console.log(`maxMoves: ${maxMoves}, numMoves: ${numMoves}`);
   if (numMoves === maxMoves) {
     console.log("results: " + checkResults());
   }
+
+  console.log(playerBoard);
 };
 
 const handleClick = (e) => {
   if (e.target.classList.contains("to-fill")) {
     handleSelectCell(e);
+  } else if (e.target.classList.contains("check-results")) {
+    checkResults();
   } else {
     deselectCell();
   }
