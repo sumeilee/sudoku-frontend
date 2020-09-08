@@ -9,6 +9,16 @@ let playerBoard;
 let guidedMode = true;
 let notesMode = false;
 
+const generateNumberPad = (size = 9) => {
+  const numberPad = document.querySelector(".number-pad");
+  for (let i = 1; i <= size; i++) {
+    const numButton = document.createElement("button");
+    numButton.setAttribute("class", "number-pad__btn");
+    numButton.innerHTML = i;
+    numberPad.appendChild(numButton);
+  }
+};
+
 const generateEmptyBoard = (size = 9) => {
   const board = document.querySelector(".board");
   let cellCount = 0;
@@ -42,6 +52,8 @@ const generateEmptyBoard = (size = 9) => {
       board.appendChild(cell);
     }
   }
+
+  generateNumberPad(size);
 
   // if (!notesMode) {
   //   document.querySelectorAll(".cell__notes").forEach((div) => {
@@ -136,10 +148,10 @@ const editCell = (cell, value) => {
     }
 
     if (guidedMode) {
-      if (value === "") {
-        cell.classList.remove("incorrect");
-        cell.classList.remove("correct");
-      } else if (solution[i][j] === Number(value)) {
+      cell.classList.remove("incorrect");
+      cell.classList.remove("correct");
+
+      if (solution[i][j] === Number(value)) {
         cell.classList.add("correct");
       } else {
         cell.classList.add("incorrect");
@@ -156,10 +168,21 @@ const editCell = (cell, value) => {
 const handleClick = (e) => {
   if (e.target.closest(".to-fill")) {
     handleSelectCell(e);
+  } else if (e.target.classList.contains("number-pad__btn")) {
+    handleNumPadPress(e);
   } else if (e.target.classList.contains("check-results")) {
     checkResults();
   } else {
     deselectCell();
+  }
+};
+
+const handleNumPadPress = (e) => {
+  const selectedCell = document.querySelector(".cell-selected");
+
+  if (selectedCell) {
+    const editValue = e.target.innerHTML;
+    editCell(selectedCell, editValue);
   }
 };
 
@@ -186,27 +209,27 @@ body.addEventListener("keydown", handleKeyPress);
 /* INITIALIZE GAME */
 const sampleData = {
   board: [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 0, 4, 0, 0, 0, 0, 8, 0],
-    [0, 0, 8, 0, 5, 0, 0, 0, 0],
-    [3, 1, 0, 0, 0, 6, 0, 0, 0],
-    [4, 6, 0, 8, 9, 1, 0, 3, 5],
-    [8, 0, 0, 0, 7, 0, 0, 1, 6],
-    [5, 0, 1, 0, 8, 0, 9, 0, 4],
-    [0, 4, 0, 9, 1, 5, 8, 6, 2],
-    [0, 8, 6, 7, 0, 0, 0, 5, 1],
+    [2, 6, 9, 0, 0, 0, 0, 0, 0],
+    [0, 0, 4, 5, 7, 8, 2, 0, 0],
+    [5, 7, 0, 2, 0, 0, 1, 0, 4],
+    [3, 1, 0, 4, 5, 0, 0, 9, 0],
+    [0, 5, 6, 8, 0, 7, 3, 1, 0],
+    [8, 0, 0, 0, 2, 0, 4, 0, 0],
+    [0, 2, 0, 0, 0, 5, 0, 0, 0],
+    [0, 0, 3, 0, 8, 0, 6, 0, 5],
+    [9, 0, 0, 0, 0, 0, 0, 4, 1],
   ],
   difficulty: "easy",
   solution: [
-    [2, 3, 9, 1, 6, 8, 5, 4, 7],
-    [1, 5, 4, 2, 3, 7, 6, 8, 9],
-    [6, 7, 8, 4, 5, 9, 1, 2, 3],
-    [3, 1, 2, 5, 4, 6, 7, 9, 8],
-    [4, 6, 7, 8, 9, 1, 2, 3, 5],
-    [8, 9, 5, 3, 7, 2, 4, 1, 6],
-    [5, 2, 1, 6, 8, 3, 9, 7, 4],
-    [7, 4, 3, 9, 1, 5, 8, 6, 2],
-    [9, 8, 6, 7, 2, 4, 3, 5, 1],
+    [2, 6, 9, 3, 1, 4, 5, 7, 8],
+    [1, 3, 4, 5, 7, 8, 2, 6, 9],
+    [5, 7, 8, 2, 6, 9, 1, 3, 4],
+    [3, 1, 2, 4, 5, 6, 8, 9, 7],
+    [4, 5, 6, 8, 9, 7, 3, 1, 2],
+    [8, 9, 7, 1, 2, 3, 4, 5, 6],
+    [6, 2, 1, 7, 4, 5, 9, 8, 3],
+    [7, 4, 3, 9, 8, 1, 6, 2, 5],
+    [9, 8, 5, 6, 3, 2, 7, 4, 1],
   ],
   status: "solved",
 };

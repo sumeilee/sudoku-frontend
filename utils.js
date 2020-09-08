@@ -49,14 +49,14 @@ const encodeParams = (params) =>
 /* End of helper functions provided by API provider */
 
 // Get sample data and save for testing
-// const getAndSaveSampleData = async (difficulty = "hard", solve = true) => {
-//   const data = await getBoardData(difficulty, solve);
+const getAndSaveSampleData = async (difficulty = "hard", solve = true) => {
+  const data = await getBoardData(difficulty, solve);
 
-//   const a = document.createElement("a");
-//   const file = new Blob([data], { type: "application/json" });
-//   a.href = URL.createObjectURL(file);
-//   a.download = `sample-${difficulty}.json`;
-//   a.click();
-// };
+  const a = document.createElement("a");
+  const file = new Blob([JSON.stringify(data)], { type: "application/json" });
+  a.href = URL.createObjectURL(file);
+  a.download = `sample-${difficulty}.json`;
+  a.click();
+};
 
-// getAndSaveSampleData("hard");
+getAndSaveSampleData("easy");
