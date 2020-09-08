@@ -140,11 +140,16 @@ const editCell = (cell, value) => {
       } else {
         numMoves--;
       }
+    }
 
-      console.log(`maxMoves: ${maxMoves}, numMoves: ${numMoves}`);
-      if (numMoves === maxMoves) {
-        console.log("results: " + checkResults());
-      }
+    playerBoard[i][j] = Number(value);
+    console.log(playerBoard);
+
+    cell.innerHTML = value;
+
+    console.log(`maxMoves: ${maxMoves}, numMoves: ${numMoves}`);
+    if (numMoves === maxMoves) {
+      console.log("results: " + checkResults());
     }
 
     if (guidedMode) {
@@ -157,12 +162,7 @@ const editCell = (cell, value) => {
         cell.classList.add("incorrect");
       }
     }
-
-    playerBoard[i][j] = Number(value);
-    console.log(playerBoard);
   }
-
-  cell.innerHTML = value;
 };
 
 const handleClick = (e) => {
