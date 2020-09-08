@@ -1,6 +1,7 @@
 const body = document.querySelector("body");
 const messageBar = document.querySelector(".message-bar");
 
+let numNotes = 3;
 let numMoves = 0;
 let maxMoves;
 let solution;
@@ -8,7 +9,8 @@ let playerBoard;
 
 const generateEmptyBoard = (size = 9) => {
   const board = document.querySelector(".board");
-  let count = 0;
+  let cellCount = 0;
+  let noteCount = 0;
 
   for (let i = 0; i < size; i++) {
     for (let j = 0; j < size; j++) {
@@ -16,7 +18,24 @@ const generateEmptyBoard = (size = 9) => {
       cell.setAttribute("class", `board__cell`);
       cell.setAttribute("data-row", i);
       cell.setAttribute("data-col", j);
-      count++;
+
+      const num = document.createElement("div");
+      num.setAttribute("class", "cell__num");
+      num.setAttribute("id", cellCount);
+      cell.appendChild(num);
+      cellCount++;
+
+      const notes = document.createElement("div");
+      notes.setAttribute("class", "cell__notes");
+      cell.appendChild(notes);
+
+      for (let i = 0; i < numNotes; i++) {
+        const note = document.createElement("div");
+        note.setAttribute("class", "cell__note");
+        note.setAttribute("id", size ** 2 + noteCount);
+        notes.appendChild(note);
+        noteCount++;
+      }
 
       board.appendChild(cell);
     }
@@ -31,7 +50,8 @@ const fillBoardData = (data) => {
       const val = data[i][j];
 
       if (val) {
-        cell.innerHTML = val;
+        cell.children[0].innerHTML = val;
+        // cell.innerHTML = val;
       } else {
         cell.classList.add("to-fill");
         maxMoves++;
@@ -81,38 +101,37 @@ const handleSelectCell = (e) => {
   const prevCell = deselectCell();
   const currentCell = e.target;
 
-  if (
-    !prevCell ||
-    (prevCell.dataset.row !== currentCell.dataset.row &&
-      prevCell.dataset.col !== currentCell.dataset.col)
-  ) {
-    e.target.classList.add("cell-selected");
+  if (!prevCell || prevCell.id !== currentCell.id) {
+    currentCell.classList.add("cell-selected");
   }
 };
 
 const editCell = (cell, value) => {
-  const i = cell.dataset.row;
-  const j = cell.dataset.col;
+  if (cell.classList.contains("cell__num")) {
+    const i = cell.parentElement.dataset.row;
+    const j = cell.parentElement.dataset.col;
+
+    playerBoard[i][j] = Number(value);
+
+    if (value) {
+      numMoves++;
+    } else {
+      numMoves--;
+    }
+
+    console.log(`maxMoves: ${maxMoves}, numMoves: ${numMoves}`);
+    if (numMoves === maxMoves) {
+      console.log("results: " + checkResults());
+    }
+
+    console.log(playerBoard);
+  }
 
   cell.innerHTML = value;
-  if (value) {
-    numMoves++;
-  } else {
-    numMoves--;
-  }
-
-  playerBoard[i][j] = Number(value);
-
-  console.log(`maxMoves: ${maxMoves}, numMoves: ${numMoves}`);
-  if (numMoves === maxMoves) {
-    console.log("results: " + checkResults());
-  }
-
-  console.log(playerBoard);
 };
 
 const handleClick = (e) => {
-  if (e.target.classList.contains("to-fill")) {
+  if (e.target.closest(".to-fill")) {
     handleSelectCell(e);
   } else if (e.target.classList.contains("check-results")) {
     checkResults();

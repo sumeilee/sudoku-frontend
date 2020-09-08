@@ -4,6 +4,7 @@
   --board-width: min(450px, 100vw - 20px);
   --board-grid-size: calc(var(--board-width) / var(--board-num-grid));
   --board-grid-config: repeat(var(--board-num-grid), var(--board-grid-size));
+  --notes-num: 3;
 }
 
 body {
@@ -40,10 +41,11 @@ body {
 .board__cell {
   align-items: center;
   background-color: white;
-  cursor: pointer;
   border: 1px solid var(--board-border-color);
   display: flex;
+  flex-flow: row wrap;
   justify-content: center;
+  position: relative;
 
   // prevent text in other cells from being highlighted when clicking div
   user-select: none;
@@ -64,4 +66,33 @@ div[data-row="6"] {
 
 .cell-selected {
   background-color: lightblue;
+}
+
+.cell__num {
+  cursor: pointer;
+  margin: 0;
+  height: 70%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.cell__notes {
+  background-color: inherit;
+  height: 30%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(var(--notes-num), 1fr);
+  column-gap: 0;
+}
+
+.to-fill .cell__notes {
+  background-color: #efefef;
+}
+
+.to-fill .cell__note {
+  cursor: pointer;
+  font-size: 0.8rem;
+  height: 100%;
 }
