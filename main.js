@@ -6,6 +6,7 @@ let numMoves = 0;
 let maxMoves;
 let solution;
 let playerBoard;
+let guided = true;
 
 const generateEmptyBoard = (size = 9) => {
   const board = document.querySelector(".board");
@@ -124,6 +125,16 @@ const editCell = (cell, value) => {
       console.log("results: " + checkResults());
     }
 
+    if (guided) {
+      if (value === "") {
+        cell.classList.remove("incorrect");
+        cell.classList.remove("correct");
+      } else if (solution[i][j] === Number(value)) {
+        cell.classList.add("correct");
+      } else {
+        cell.classList.add("incorrect");
+      }
+    }
     console.log(playerBoard);
   }
 

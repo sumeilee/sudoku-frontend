@@ -5,6 +5,7 @@
   --board-grid-size: calc(var(--board-width) / var(--board-num-grid));
   --board-grid-config: repeat(var(--board-num-grid), var(--board-grid-size));
   --notes-num: 3;
+  --notes-size: 30%;
 }
 
 body {
@@ -71,7 +72,7 @@ div[data-row="6"] {
 .cell__num {
   cursor: pointer;
   margin: 0;
-  height: 70%;
+  height: calc(100% - var(--notes-size));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -80,7 +81,7 @@ div[data-row="6"] {
 
 .cell__notes {
   background-color: inherit;
-  height: 30%;
+  height: var(--notes-size);
   width: 100%;
   display: grid;
   grid-template-columns: repeat(var(--notes-num), 1fr);
@@ -93,6 +94,17 @@ div[data-row="6"] {
 
 .to-fill .cell__note {
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 0.8rem;
   height: 100%;
+}
+
+.correct {
+  background-color: #e7ffe7;
+}
+
+.incorrect {
+  background-color: #ffe7ff;
 }
