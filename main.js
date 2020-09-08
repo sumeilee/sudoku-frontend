@@ -6,7 +6,8 @@ let numMoves = 0;
 let maxMoves;
 let solution;
 let playerBoard;
-let guided = true;
+let guidedMode = true;
+let notesMode = false;
 
 const generateEmptyBoard = (size = 9) => {
   const board = document.querySelector(".board");
@@ -41,6 +42,12 @@ const generateEmptyBoard = (size = 9) => {
       board.appendChild(cell);
     }
   }
+
+  // if (!notesMode) {
+  //   document.querySelectorAll(".cell__notes").forEach((div) => {
+  //     div.style.display = "none";
+  //   });
+  // }
 };
 
 const fillBoardData = (data) => {
@@ -112,20 +119,23 @@ const editCell = (cell, value) => {
     const i = cell.parentElement.dataset.row;
     const j = cell.parentElement.dataset.col;
 
-    playerBoard[i][j] = Number(value);
+    const currentCellValue = playerBoard[i][j];
 
-    if (value) {
-      numMoves++;
-    } else {
-      numMoves--;
+    if (!currentCellValue) {
+      // if cell not currently filled, update move count
+      if (value) {
+        numMoves++;
+      } else {
+        numMoves--;
+      }
+
+      console.log(`maxMoves: ${maxMoves}, numMoves: ${numMoves}`);
+      if (numMoves === maxMoves) {
+        console.log("results: " + checkResults());
+      }
     }
 
-    console.log(`maxMoves: ${maxMoves}, numMoves: ${numMoves}`);
-    if (numMoves === maxMoves) {
-      console.log("results: " + checkResults());
-    }
-
-    if (guided) {
+    if (guidedMode) {
       if (value === "") {
         cell.classList.remove("incorrect");
         cell.classList.remove("correct");
@@ -135,6 +145,8 @@ const editCell = (cell, value) => {
         cell.classList.add("incorrect");
       }
     }
+
+    playerBoard[i][j] = Number(value);
     console.log(playerBoard);
   }
 
