@@ -8,8 +8,6 @@ let solution;
 let playerBoard;
 let guidedMode = true;
 let notesMode = false;
-let gridSize = 9;
-let cellsToFill = { row: [], col: [] };
 
 const generateNumberPad = (size = 9) => {
   const numberPad = document.querySelector(".number-pad");
@@ -81,38 +79,6 @@ const fillBoardData = (data) => {
     }
   }
   playerBoard = data;
-
-  getIndexOfCellsToFill();
-  // console.log(cellsToFill);
-};
-
-const getUnfilledCellIndex = (board) => {
-  const toFillIndex = [];
-
-  for (let i = 0; i < board.length; i++) {
-    toFillIndex.push(
-      board[i].reduce((accumulator, currentVal, index) => {
-        // console.log(currentVal);
-        if (currentVal === 0) {
-          accumulator.push(index);
-        }
-
-        return accumulator;
-      }, [])
-    );
-  }
-
-  return toFillIndex;
-};
-
-const getIndexOfCellsToFill = (size = 9) => {
-  cellsToFill.row = getUnfilledCellIndex(playerBoard);
-
-  playerBoardTranspose = playerBoard[0].map((val, index) =>
-    playerBoard.map((row) => row[index])
-  );
-
-  cellsToFill.col = getUnfilledCellIndex(playerBoardTranspose);
 };
 
 const checkResults = (withAPI = true) => {
@@ -245,45 +211,36 @@ const handleKeyPress = (e) => {
 
   // // if arrows keys pressed
   if (keyPressed >= 37 && keyPressed <= 40) {
-    const selectedCell = document.querySelector(".cell-selected");
+    handleArrowKeyPress(keyPressed);
+  }
+};
 
-    if (selectedCell) {
-      let i = Number(selectedCell.parentElement.dataset.row);
-      let j = Number(selectedCell.parentElement.dataset.col);
+const handleArrowKeyPress = (keyCode) => {
+  const selectedCell = document.querySelector(".cell-selected");
 
-      if (keyPressed === 37 || keyPressed === 39) {
-        // left and right keys
-        const cellIndexArray = cellsToFill.row[i];
-        const keyPressedIdx = cellIndexArray.indexOf(j);
-        let newIdx;
+  if (selectedCell) {
+    let i = Number(selectedCell.parentElement.dataset.row);
+    let j = Number(selectedCell.parentElement.dataset.col);
 
-        if (keyPressed === 37) {
-          newIdx = Math.max(0, keyPressedIdx - 1);
-        } else {
-          newIdx = Math.min(cellIndexArray.length - 1, keyPressedIdx + 1);
-        }
-
-        j = cellIndexArray[newIdx];
-      } else if (keyPressed === 38 || keyPressed === 40) {
-        // up and down keys
-        const cellIndexArray = cellsToFill.col[j];
-        const keyPressedIdx = cellIndexArray.indexOf(i);
-
-        if (keyPressed === 38) {
-          newIdx = Math.max(0, keyPressedIdx - 1);
-        } else {
-          newIdx = Math.min(cellIndexArray.length - 1, keyPressedIdx + 1);
-        }
-
-        i = cellIndexArray[newIdx];
-      }
-
-      const newCell = document.querySelector(
-        `[data-row="${i}"][data-col="${j}"].to-fill .cell__num`
-      );
-
-      handleSelectCell(newCell, false);
+    if (keyCode === 37) {
+      // left arrow
+      j = Math.max(0, j - 1);
+    } else if (keyCode === 39) {
+      // right arrow
+      j = Math.min(playerBoard.length - 1, j + 1);
+    } else if (keyCode === 38) {
+      // up arrow
+      i = Math.max(0, i - 1);
+    } else if (keyCode === 40) {
+      // down arrow
+      i = Math.min(playerBoard.length - 1, i + 1);
     }
+
+    const newCell = document.querySelector(
+      `[data-row="${i}"][data-col="${j}"] .cell__num`
+    );
+
+    handleSelectCell(newCell, false);
   }
 };
 
