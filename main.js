@@ -8,6 +8,8 @@ let solution;
 let playerBoard;
 let guidedMode = true;
 let notesMode = false;
+let gridSize = 9;
+let cellsToFill = { row: [], col: [] };
 
 const generateNumberPad = (size = 9) => {
   const numberPad = document.querySelector(".number-pad");
@@ -79,6 +81,38 @@ const fillBoardData = (data) => {
     }
   }
   playerBoard = data;
+
+  getIndexOfCellsToFill();
+  console.log(cellsToFill);
+};
+
+const getUnfilledCellIndex = (board) => {
+  const toFillIndex = [];
+
+  for (let i = 0; i < board.length; i++) {
+    toFillIndex.push(
+      board[i].reduce((accumulator, currentVal, index) => {
+        // console.log(currentVal);
+        if (currentVal === 0) {
+          accumulator.push(index);
+        }
+
+        return accumulator;
+      }, [])
+    );
+  }
+
+  return toFillIndex;
+};
+
+const getIndexOfCellsToFill = (size = 9) => {
+  cellsToFill.row = getUnfilledCellIndex(playerBoard);
+
+  playerBoardTranspose = playerBoard[0].map((val, index) =>
+    playerBoard.map((row) => row[index])
+  );
+
+  cellsToFill.col = getUnfilledCellIndex(playerBoardTranspose);
 };
 
 const checkResults = (withAPI = true) => {
@@ -117,12 +151,20 @@ const deselectCell = () => {
   return selectedCell;
 };
 
-const handleSelectCell = (e) => {
+const handleSelectCell = (cell, deselectIfSameCell = true) => {
   const prevCell = deselectCell();
-  const currentCell = e.target;
+  // const currentCell = e.target;
 
-  if (!prevCell || prevCell.id !== currentCell.id) {
-    currentCell.classList.add("cell-selected");
+  // if (!prevCell || prevCell.id !== cell.id) {
+  //   cell.classList.add("cell-selected");
+  // }
+
+  if (
+    !prevCell ||
+    !deselectIfSameCell ||
+    (deselectIfSameCell && prevCell.id !== cell.id)
+  ) {
+    cell.classList.add("cell-selected");
   }
 };
 
@@ -156,10 +198,12 @@ const editCell = (cell, value) => {
       cell.classList.remove("incorrect");
       cell.classList.remove("correct");
 
-      if (solution[i][j] === Number(value)) {
-        cell.classList.add("correct");
-      } else {
-        cell.classList.add("incorrect");
+      if (Number(value)) {
+        if (solution[i][j] === Number(value)) {
+          cell.classList.add("correct");
+        } else {
+          cell.classList.add("incorrect");
+        }
       }
     }
   }
@@ -167,7 +211,7 @@ const editCell = (cell, value) => {
 
 const handleClick = (e) => {
   if (e.target.closest(".to-fill")) {
-    handleSelectCell(e);
+    handleSelectCell(e.target);
   } else if (e.target.classList.contains("number-pad__btn")) {
     handleNumPadPress(e);
   } else if (e.target.classList.contains("check-results")) {
@@ -188,17 +232,63 @@ const handleNumPadPress = (e) => {
 
 const handleKeyPress = (e) => {
   const keyPressed = e.keyCode;
-  let editValue;
 
-  const selectedCell = document.querySelector(".cell-selected");
+  // if number key or delete pressed
+  if ((keyPressed >= 49 && keyPressed <= 57) || keyPressed === 8) {
+    const selectedCell = document.querySelector(".cell-selected");
+    let editValue;
 
-  if (selectedCell) {
-    if (keyPressed >= 49 && keyPressed <= 57) {
-      editValue = Number(String.fromCharCode(keyPressed));
+    if (selectedCell) {
+      if (keyPressed >= 49 && keyPressed <= 57) {
+        editValue = Number(String.fromCharCode(keyPressed));
+      } else if (keyPressed === 8) {
+        editValue = "";
+      }
+
       editCell(selectedCell, editValue);
-    } else if (keyPressed === 8) {
-      editValue = "";
-      editCell(selectedCell, editValue);
+    }
+  }
+
+  // // if arrows keys pressed
+  if (keyPressed >= 37 && keyPressed <= 40) {
+    const selectedCell = document.querySelector(".cell-selected");
+
+    if (selectedCell) {
+      let i = Number(selectedCell.parentElement.dataset.row);
+      let j = Number(selectedCell.parentElement.dataset.col);
+
+      if (keyPressed === 37 || keyPressed === 39) {
+        // left and right keys
+        const cellIndexArray = cellsToFill.row[i];
+        const keyPressedIdx = cellIndexArray.indexOf(j);
+        let newIdx;
+
+        if (keyPressed === 37) {
+          newIdx = Math.max(0, keyPressedIdx - 1);
+        } else {
+          newIdx = Math.min(cellIndexArray.length - 1, keyPressedIdx + 1);
+        }
+
+        j = cellIndexArray[newIdx];
+      } else if (keyPressed === 38 || keyPressed === 40) {
+        // up and down keys
+        const cellIndexArray = cellsToFill.col[j];
+        const keyPressedIdx = cellIndexArray.indexOf(i);
+
+        if (keyPressed === 38) {
+          newIdx = Math.max(0, keyPressedIdx - 1);
+        } else {
+          newIdx = Math.min(cellIndexArray.length - 1, keyPressedIdx + 1);
+        }
+
+        i = cellIndexArray[newIdx];
+      }
+
+      const newCell = document.querySelector(
+        `[data-row="${i}"][data-col="${j}"].to-fill .cell__num`
+      );
+
+      handleSelectCell(newCell, false);
     }
   }
 };
