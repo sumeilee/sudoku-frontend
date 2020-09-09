@@ -7,7 +7,9 @@ let maxMoves;
 let solution;
 let playerBoard;
 let guidedMode = true;
-let notesMode = false;
+let notesMode = true;
+let cellsToCycle = [];
+let cellCycleIdx = 0;
 
 const generateNumberPad = (size = 9) => {
   const numberPad = document.querySelector(".number-pad");
@@ -131,6 +133,7 @@ const handleSelectCell = (cell, deselectIfSameCell = true) => {
 
 const editCell = (cell, value) => {
   if (cell.classList.contains("cell__num")) {
+    // update moves and scoreboard only if number cell
     const i = cell.parentElement.dataset.row;
     const j = cell.parentElement.dataset.col;
 
@@ -144,8 +147,6 @@ const editCell = (cell, value) => {
 
     playerBoard[i][j] = Number(value);
     // console.log(playerBoard);
-
-    cell.innerHTML = value;
 
     console.log(
       `input: ${value}, numMoves: ${numMoves}, maxMoves: ${maxMoves}`
@@ -167,6 +168,9 @@ const editCell = (cell, value) => {
       }
     }
   }
+
+  // edit cell regardless of number cell or notes cell
+  cell.innerHTML = value;
 };
 
 const handleClick = (e) => {
@@ -193,8 +197,8 @@ const handleNumPadPress = (e) => {
 const handleKeyPress = (e) => {
   const keyPressed = e.keyCode;
 
-  // if number key or delete pressed
   if ((keyPressed >= 49 && keyPressed <= 57) || keyPressed === 8) {
+    // if number key or delete pressed
     const selectedCell = document.querySelector(".cell-selected");
     let editValue;
 
@@ -207,40 +211,98 @@ const handleKeyPress = (e) => {
 
       editCell(selectedCell, editValue);
     }
-  }
-
-  // // if arrows keys pressed
-  if (keyPressed >= 37 && keyPressed <= 40) {
+  } else if (keyPressed >= 37 && keyPressed <= 40) {
+    // if arrow key pressed
     handleArrowKeyPress(keyPressed);
+  } else if (keyPressed === 13 && notesMode) {
+    // if return key pressed and notes mode is on
+    handleReturnKeyPress();
+  }
+};
+
+const handleReturnKeyPress = () => {
+  const selectedCell = document.querySelector(".cell-selected");
+
+  if (selectedCell) {
+    deselectCell();
+
+    if (cellsToCycle.length !== 0) {
+      // if there are currently notes to cycle through, exit cycle mode
+      cellsToCycle = [];
+
+      if (!selectedCell.classList.contains("cell__num")) {
+        handleSelectCell(
+          selectedCell.parentElement.parentElement.querySelector(".cell__num")
+        );
+      }
+    } else {
+      // if not currently cycling through notes, enter cycle mode
+      cellsToCycle = [
+        ...selectedCell.parentElement.querySelectorAll(".cell__note"),
+        selectedCell,
+      ];
+
+      handleSelectCell(cellsToCycle[cellCycleIdx]);
+    }
   }
 };
 
 const handleArrowKeyPress = (keyCode) => {
-  const selectedCell = document.querySelector(".cell-selected");
+  if (cellsToCycle.length) {
+    // if currently cycling through notes
+    const numCells = cellsToCycle.length;
+    let newCell;
 
-  if (selectedCell) {
-    let i = Number(selectedCell.parentElement.dataset.row);
-    let j = Number(selectedCell.parentElement.dataset.col);
+    if (keyCode === 37 || keyCode === 39) {
+      if (keyCode === 37) {
+        cellCycleIdx--;
+      } else if (keyCode === 39) {
+        cellCycleIdx++;
+      }
 
-    if (keyCode === 37) {
-      // left arrow
-      j = Math.max(0, j - 1);
-    } else if (keyCode === 39) {
-      // right arrow
-      j = Math.min(playerBoard.length - 1, j + 1);
-    } else if (keyCode === 38) {
-      // up arrow
-      i = Math.max(0, i - 1);
-    } else if (keyCode === 40) {
-      // down arrow
-      i = Math.min(playerBoard.length - 1, i + 1);
+      let newIdx;
+      if (cellCycleIdx >= 0) {
+        newIdx = Math.abs(cellCycleIdx % numCells);
+      } else {
+        newIdx = numCells - Math.abs(cellCycleIdx % numCells);
+        if (newIdx === numCells) {
+          newIdx = 0;
+        }
+      }
+      // console.log(`cycleIdx: ${cellCycleIdx}, newIdx: ${newIdx}`);
+
+      newCell = cellsToCycle[newIdx];
+
+      handleSelectCell(newCell, false);
     }
+  } else {
+    // traverse all number cells
+    const selectedCell = document.querySelector(".cell-selected");
 
-    const newCell = document.querySelector(
-      `[data-row="${i}"][data-col="${j}"] .cell__num`
-    );
+    if (selectedCell) {
+      let i = Number(selectedCell.parentElement.dataset.row);
+      let j = Number(selectedCell.parentElement.dataset.col);
 
-    handleSelectCell(newCell, false);
+      if (keyCode === 37) {
+        // left arrow
+        j = Math.max(0, j - 1);
+      } else if (keyCode === 39) {
+        // right arrow
+        j = Math.min(playerBoard.length - 1, j + 1);
+      } else if (keyCode === 38) {
+        // up arrow
+        i = Math.max(0, i - 1);
+      } else if (keyCode === 40) {
+        // down arrow
+        i = Math.min(playerBoard.length - 1, i + 1);
+      }
+
+      const newCell = document.querySelector(
+        `[data-row="${i}"][data-col="${j}"] .cell__num`
+      );
+
+      handleSelectCell(newCell, false);
+    }
   }
 };
 
