@@ -83,7 +83,7 @@ const fillBoardData = (data) => {
   playerBoard = data;
 
   getIndexOfCellsToFill();
-  console.log(cellsToFill);
+  // console.log(cellsToFill);
 };
 
 const getUnfilledCellIndex = (board) => {
@@ -153,11 +153,6 @@ const deselectCell = () => {
 
 const handleSelectCell = (cell, deselectIfSameCell = true) => {
   const prevCell = deselectCell();
-  // const currentCell = e.target;
-
-  // if (!prevCell || prevCell.id !== cell.id) {
-  //   cell.classList.add("cell-selected");
-  // }
 
   if (
     !prevCell ||
@@ -175,21 +170,20 @@ const editCell = (cell, value) => {
 
     const currentCellValue = playerBoard[i][j];
 
-    if (!currentCellValue) {
-      // if cell not currently filled, update move count
-      if (value) {
-        numMoves++;
-      } else {
-        numMoves--;
-      }
+    if (!currentCellValue && value) {
+      numMoves++;
+    } else if (currentCellValue && !value) {
+      numMoves--;
     }
 
     playerBoard[i][j] = Number(value);
-    console.log(playerBoard);
+    // console.log(playerBoard);
 
     cell.innerHTML = value;
 
-    console.log(`maxMoves: ${maxMoves}, numMoves: ${numMoves}`);
+    console.log(
+      `input: ${value}, numMoves: ${numMoves}, maxMoves: ${maxMoves}`
+    );
     if (numMoves === maxMoves) {
       console.log("results: " + checkResults());
     }
