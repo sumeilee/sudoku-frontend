@@ -14,6 +14,9 @@ let darkMode = false;
 let notesMode = true;
 let cellsToCycle = [];
 let cellCycleIdx = 0;
+let storage = { preFilled: {}, userFilled: {}, notes: {} };
+let testing = false;
+let localStorageKey = "sudokuGameData";
 
 const generateNumberPad = (size = 9) => {
   const numberPad = document.querySelector(".number-pad");
@@ -107,10 +110,18 @@ const displayMessage = (msg) => {
   messageBar.innerHTML = `<p>${msg}</p>`;
 };
 
-const getDataAndFillBoard = async (difficulty = "hard", solve = true) => {
-  const { board } = await getBoardData(difficulty, solve);
+const getNewData = () => {};
 
-  fillBoardData(board);
+const resetBoard = () => {};
+
+const getDataAndFillBoard = async (difficulty = "hard", solve = true) => {
+  const data = await getBoardData(difficulty, solve);
+  solution = data.solution;
+
+  storage.apiData = data;
+  updateLocalStorage();
+
+  fillBoardData(data.board);
 };
 
 /* EVENT LISTENERS AND HANDLERS */
@@ -151,6 +162,7 @@ const editCell = (cell, value) => {
 
     playerBoard[i][j] = Number(value);
     // console.log(playerBoard);
+    storage.userFilled[cell.id] = value;
 
     console.log(
       `input: ${value}, numMoves: ${numMoves}, maxMoves: ${maxMoves}`
@@ -312,6 +324,20 @@ const handleArrowKeyPress = (keyCode) => {
   }
 };
 
+const updateLocalStorage = () => {
+  console.log("updating local storage to: ");
+  console.log(storage);
+  localStorage.setItem(localStorageKey, JSON.stringify(storage));
+};
+
+const getLocalStorage = () => {
+  return JSON.parse(localStorage.getItem(localStorageKey));
+};
+
+const clearLocalStorage = () => {
+  localStorage.clear(localStorageKey);
+};
+
 body.addEventListener("click", handleClick);
 body.addEventListener("keydown", handleKeyPress);
 
@@ -374,35 +400,44 @@ const setFontColors = (darkMode, guidedMode) => {
 };
 
 /* INITIALIZE GAME */
-const sampleData = {
-  board: [
-    [2, 6, 9, 0, 0, 0, 0, 0, 0],
-    [0, 0, 4, 5, 7, 8, 2, 0, 0],
-    [5, 7, 0, 2, 0, 0, 1, 0, 4],
-    [3, 1, 0, 4, 5, 0, 0, 9, 0],
-    [0, 5, 6, 8, 0, 7, 3, 1, 0],
-    [8, 0, 0, 0, 2, 0, 4, 0, 0],
-    [0, 2, 0, 0, 0, 5, 0, 0, 0],
-    [0, 0, 3, 0, 8, 0, 6, 0, 5],
-    [9, 0, 0, 0, 0, 0, 0, 4, 1],
-  ],
-  difficulty: "easy",
-  solution: [
-    [2, 6, 9, 3, 1, 4, 5, 7, 8],
-    [1, 3, 4, 5, 7, 8, 2, 6, 9],
-    [5, 7, 8, 2, 6, 9, 1, 3, 4],
-    [3, 1, 2, 4, 5, 6, 8, 9, 7],
-    [4, 5, 6, 8, 9, 7, 3, 1, 2],
-    [8, 9, 7, 1, 2, 3, 4, 5, 6],
-    [6, 2, 1, 7, 4, 5, 9, 8, 3],
-    [7, 4, 3, 9, 8, 1, 6, 2, 5],
-    [9, 8, 5, 6, 3, 2, 7, 4, 1],
-  ],
-  status: "solved",
-};
 
-solution = sampleData.solution;
+if (testing) {
+  const sampleData = {
+    board: [
+      [2, 6, 9, 0, 0, 0, 0, 0, 0],
+      [0, 0, 4, 5, 7, 8, 2, 0, 0],
+      [5, 7, 0, 2, 0, 0, 1, 0, 4],
+      [3, 1, 0, 4, 5, 0, 0, 9, 0],
+      [0, 5, 6, 8, 0, 7, 3, 1, 0],
+      [8, 0, 0, 0, 2, 0, 4, 0, 0],
+      [0, 2, 0, 0, 0, 5, 0, 0, 0],
+      [0, 0, 3, 0, 8, 0, 6, 0, 5],
+      [9, 0, 0, 0, 0, 0, 0, 4, 1],
+    ],
+    difficulty: "easy",
+    solution: [
+      [2, 6, 9, 3, 1, 4, 5, 7, 8],
+      [1, 3, 4, 5, 7, 8, 2, 6, 9],
+      [5, 7, 8, 2, 6, 9, 1, 3, 4],
+      [3, 1, 2, 4, 5, 6, 8, 9, 7],
+      [4, 5, 6, 8, 9, 7, 3, 1, 2],
+      [8, 9, 7, 1, 2, 3, 4, 5, 6],
+      [6, 2, 1, 7, 4, 5, 9, 8, 3],
+      [7, 4, 3, 9, 8, 1, 6, 2, 5],
+      [9, 8, 5, 6, 3, 2, 7, 4, 1],
+    ],
+    status: "solved",
+  };
 
-generateEmptyBoard();
-// getDataAndFillBoard();
-fillBoardData(sampleData.board);
+  solution = sampleData.solution;
+  storage.apiData = sampleData;
+  updateLocalStorage();
+
+  generateEmptyBoard();
+  fillBoardData(sampleData.board);
+} else {
+  generateEmptyBoard();
+  getDataAndFillBoard();
+}
+
+// console.log(getLocalStorageData());
