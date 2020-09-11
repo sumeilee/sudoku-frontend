@@ -1,4 +1,5 @@
 :root {
+  --background-color: white;
   --board-num-grid: 9;
   --board-border-color: grey;
   --board-width: min(450px, 100vw - 20px);
@@ -6,11 +7,18 @@
   --board-grid-config: repeat(var(--board-num-grid), var(--board-grid-size));
   --notes-num: 3;
   --notes-size: 30%;
+  --notes-background-color: #efefef;
+  --number-pad-bg-color: #efefef;
+  --font-color: black;
+  --correct-color: green;
+  --incorrect-color: red;
+  --bg-color-selected-cell: lightgrey;
 }
 
 body {
+  background-color: var(--background-color);
   box-sizing: border-box;
-  color: black;
+  color: var(--font-color);
   font-family: sans-serif;
   font-size: 1.5rem;
   margin: 0;
@@ -19,7 +27,7 @@ body {
 
 .container {
   margin: 0 auto;
-  max-width: 500px;
+  max-width: 475px;
   width: 100%;
 }
 
@@ -47,7 +55,7 @@ body {
 
 .board__cell {
   align-items: center;
-  background-color: white;
+  background-color: var(--background-color);
   border: 1px solid var(--board-border-color);
   display: flex;
   flex-flow: row wrap;
@@ -72,7 +80,7 @@ div[data-row="6"] {
 }
 
 .cell-selected {
-  background-color: lightblue;
+  background-color: var(--bg-color-selected-cell);
   // border: 3px solid blue;
 }
 
@@ -97,7 +105,7 @@ div[data-row="6"] {
 }
 
 .to-fill .cell__notes {
-  background-color: #efefef;
+  background-color: var(--notes-background-color);
 }
 
 .to-fill .cell__note {
@@ -111,26 +119,40 @@ div[data-row="6"] {
 
 .correct {
   // background-color: #e7ffe7;
-  color: green;
+  color: var(--correct-color);
 }
 
 .incorrect {
   // background-color: #ffe7ff;
-  color: red;
+  color: var(--incorrect-color);
 }
 
 .number-pad {
+  box-sizing: border-box;
   column-gap: 5px;
   display: grid;
   grid-template-columns: repeat(var(--board-num-grid), 1fr);
-  // justify-content: space-evenly;
   margin: 20px auto;
+  padding: 0 10px;
   width: 100%;
 }
 
 .number-pad__btn {
+  background-color: var(--number-pad-bg-color);
+  border: 1px solid var(--font-color);
+  color: var(--font-color);
   cursor: pointer;
   font-size: 1rem;
   // margin: 0 px;
-  padding: 10px 15px;
+  padding: 10px 0;
+}
+
+.control-panel {
+  font-size: 1rem;
+}
+
+@media screen and (max-width: 375px) {
+  .to-fill .cell__note {
+    font-size: 0.6rem;
+  }
 }
