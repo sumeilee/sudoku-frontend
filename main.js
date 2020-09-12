@@ -159,6 +159,7 @@ const clearNotes = () => {
 
 const getNewGame = async (difficulty = "hard", solve = true) => {
   apiData = await getBoardData(difficulty, solve);
+  updateLocalStorage(localStorageKey, { apiData });
 
   resetBoard();
   // playerBoard = deepCopy2DArr(apiData.board);
@@ -310,6 +311,9 @@ const handleClick = (e) => {
   } else if (e.target.classList.contains("check-results")) {
     checkResults();
   } else if (e.target.id === "new-game") {
+    const diffSelect = document.querySelector("#game-difficulty");
+    difficulty = diffSelect.options[diffSelect.selectedIndex].value;
+    console.log(`difficulty: ${difficulty}`);
     getNewGame(difficulty, solve);
   } else if (e.target.id === "reset-game") {
     resetBoard();

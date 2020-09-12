@@ -4,6 +4,7 @@ const getBoardData = async (difficulty = "hard", solve = true) => {
   try {
     const response = await fetch(`${apiURL}/board?difficulty=${difficulty}`);
     let data = await response.json();
+    console.log(`getting new ${difficulty} game`);
 
     if (solve) {
       const solvedData = await getSolvedBoardData(data);
