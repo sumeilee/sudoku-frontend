@@ -59,4 +59,4 @@ const getAndSaveSampleData = async (difficulty = "hard", solve = true) => {
   a.click();
 };
 
-getAndSaveSampleData("easy");
+// getAndSaveSampleData("easy");

@@ -12,7 +12,7 @@
   --font-color: black;
   --correct-color: green;
   --incorrect-color: red;
-  --bg-color-selected-cell: lightgrey;
+  --bg-color-selected: lightgrey;
 }
 
 body {
@@ -80,7 +80,7 @@ div[data-row="6"] {
 }
 
 .cell-selected {
-  background-color: var(--bg-color-selected-cell);
+  background-color: var(--bg-color-selected);
   // border: 3px solid blue;
 }
 
@@ -148,7 +148,11 @@ div[data-row="6"] {
 }
 
 .control-panel {
+  align-items: center;
+  display: flex;
+  flex-flow: row wrap;
   font-size: 1rem;
+  justify-content: space-evenly;
 }
 
 @media screen and (max-width: 375px) {

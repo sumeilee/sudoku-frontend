@@ -2,13 +2,15 @@ const root = document.documentElement;
 const body = document.querySelector("body");
 const messageBar = document.querySelector(".message-bar");
 const darkModeCheckBox = document.querySelector("#dark-mode");
+const guidedModeCheckBox = document.querySelector("#guided-mode");
 
 let numNotes = 3;
 let numMoves = 0;
 let maxMoves;
 let solution;
 let playerBoard;
-let guidedMode = true;
+let guidedMode = false;
+let darkMode = false;
 let notesMode = true;
 let cellsToCycle = [];
 let cellCycleIdx = 0;
@@ -157,18 +159,20 @@ const editCell = (cell, value) => {
       console.log("results: " + checkResults());
     }
 
-    if (guidedMode) {
-      cell.classList.remove("incorrect");
-      cell.classList.remove("correct");
+    // for guided mode
+    // if (guidedMode) {
+    cell.classList.remove("incorrect");
+    cell.classList.remove("correct");
 
-      if (Number(value)) {
-        if (solution[i][j] === Number(value)) {
-          cell.classList.add("correct");
-        } else {
-          cell.classList.add("incorrect");
-        }
+    if (Number(value)) {
+      if (solution[i][j] === Number(value)) {
+        cell.classList.add("correct");
+      } else {
+        cell.classList.add("incorrect");
       }
     }
+    // }
+    setFontColors(darkMode, guidedMode);
   }
 
   // edit cell regardless of number cell or notes cell
@@ -313,6 +317,7 @@ body.addEventListener("keydown", handleKeyPress);
 
 darkModeCheckBox.addEventListener("change", () => {
   if (darkModeCheckBox.checked) {
+    darkMode = true;
     const darkest = "#1b262c"; // dark grey
     const midDark = "#4f3b78";
     const midLight = "#927fbf";
@@ -320,26 +325,53 @@ darkModeCheckBox.addEventListener("change", () => {
 
     root.style.setProperty("--background-color", darkest);
     root.style.setProperty("--notes-background-color", midDark);
-    root.style.setProperty("--font-color", lightest);
     root.style.setProperty("--board-border-color", midLight);
     root.style.setProperty("--number-pad-bg-color", midDark);
-    root.style.setProperty("--correct-color", "#77abb7");
-    root.style.setProperty("--incorrect-color", "#f1bbd5");
-    root.style.setProperty(
-      "--bg-color-selected-cell",
-      "rgb(220, 220, 220, 0.3)"
-    );
+    root.style.setProperty("--bg-color-selected", "rgb(220, 220, 220, 0.3)");
   } else {
+    darkMode = false;
     root.style.setProperty("--background-color", "white");
     root.style.setProperty("--notes-background-color", "#efefef");
-    root.style.setProperty("--font-color", "black");
     root.style.setProperty("--board-border-color", "grey");
     root.style.setProperty("--number-pad-bg-color", "#efefef");
-    root.style.setProperty("--correct-color", "green");
-    root.style.setProperty("--incorrect-color", "red");
-    root.style.setProperty("--bg-color-selected-cell", "lightgrey");
+    root.style.setProperty("--bg-color-selected", "lightgrey");
   }
+  setFontColors(darkModeCheckBox.checked, guidedMode);
 });
+
+guidedModeCheckBox.addEventListener("change", () => {
+  if (guidedModeCheckBox.checked) {
+    guidedMode = true;
+  } else {
+    guidedMode = false;
+  }
+  setFontColors(darkMode, guidedModeCheckBox.checked);
+});
+
+const setFontColors = (darkMode, guidedMode) => {
+  root.style.setProperty("--font-color", "black");
+
+  if (darkMode) {
+    root.style.setProperty("--font-color", "#c4bbf0");
+
+    if (guidedMode) {
+      root.style.setProperty("--correct-color", "#77abb7");
+      root.style.setProperty("--incorrect-color", "#f1bbd5");
+    } else {
+      root.style.setProperty("--correct-color", "#c4bbf0");
+      root.style.setProperty("--incorrect-color", "#c4bbf0");
+    }
+  } else {
+    if (guidedMode) {
+      console.log("here");
+      root.style.setProperty("--correct-color", "green");
+      root.style.setProperty("--incorrect-color", "red");
+    } else {
+      root.style.setProperty("--correct-color", "black");
+      root.style.setProperty("--incorrect-color", "black");
+    }
+  }
+};
 
 /* INITIALIZE GAME */
 const sampleData = {
