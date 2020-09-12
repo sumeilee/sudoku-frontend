@@ -122,9 +122,16 @@ const fillSavedUserInput = () => {
   userFilled.forEach((subArray, i) =>
     subArray.forEach((val, j) => {
       if (val) {
-        document.querySelector(
+        const cell = document.querySelector(
           `[data-row="${i}"][data-col="${j}"] .cell__num`
-        ).innerHTML = val;
+        );
+        cell.innerHTML = val;
+
+        if (Number(val) === apiData.solution[i][j]) {
+          cell.classList.add("correct");
+        } else {
+          cell.classList.add("incorrect");
+        }
       }
     })
   );
@@ -260,11 +267,7 @@ const editCell = (cell, value) => {
 
     if (useLocalStorage) {
       const userFilled = storage.userFilled;
-      console.log(userFilled);
       userFilled[i][j] = Number(value);
-
-      // storage.playerBoard = playerBoard;
-      // storage.userFilled[cell.id] = value;
 
       updateLocalStorage(localStorageKey, {
         userFilled,
@@ -396,7 +399,7 @@ const handleReturnKeyPress = () => {
 
 const handleArrowKeyPress = (keyCode) => {
   if (cellsToCycle.length) {
-    console.log("cycling");
+    // console.log("cycling");
     // if currently cycling through notes
     const numCells = cellsToCycle.length;
     let newCell;
@@ -420,8 +423,6 @@ const handleArrowKeyPress = (keyCode) => {
       // console.log(`cycleIdx: ${cellCycleIdx}, newIdx: ${newIdx}`);
 
       newCell = cellsToCycle[newIdx];
-      console.log(newIdx);
-      console.log(newCell);
 
       handleSelectCell(newCell, false);
     }
@@ -476,9 +477,8 @@ const removeLocalStorage = (key) => {
 body.addEventListener("click", handleClick);
 body.addEventListener("keydown", handleKeyPress);
 
-darkModeCheckBox.addEventListener("change", () => {
-  if (darkModeCheckBox.checked) {
-    darkMode = true;
+const setThemeColors = (darkMode = false, guidedMode = false) => {
+  if (darkMode) {
     const darkest = "#1b262c"; // dark grey
     const midDark = "#4f3b78";
     const midLight = "#927fbf";
@@ -490,14 +490,27 @@ darkModeCheckBox.addEventListener("change", () => {
     root.style.setProperty("--number-pad-bg-color", midDark);
     root.style.setProperty("--bg-color-selected", "rgb(220, 220, 220, 0.3)");
   } else {
-    darkMode = false;
     root.style.setProperty("--background-color", "white");
     root.style.setProperty("--notes-background-color", "#efefef");
     root.style.setProperty("--board-border-color", "grey");
     root.style.setProperty("--number-pad-bg-color", "#efefef");
     root.style.setProperty("--bg-color-selected", "lightgrey");
   }
-  setFontColors(darkModeCheckBox.checked, guidedMode);
+
+  setFontColors(darkMode, guidedMode);
+};
+
+darkModeCheckBox.addEventListener("change", () => {
+  if (darkModeCheckBox.checked) {
+    darkMode = true;
+  } else {
+    darkMode = false;
+  }
+  setThemeColors(darkMode, guidedMode);
+
+  if (useLocalStorage) {
+    updateLocalStorage(localStorageKey, { darkMode });
+  }
 });
 
 guidedModeCheckBox.addEventListener("change", () => {
@@ -506,7 +519,11 @@ guidedModeCheckBox.addEventListener("change", () => {
   } else {
     guidedMode = false;
   }
-  setFontColors(darkMode, guidedModeCheckBox.checked);
+  setFontColors(darkMode, guidedMode);
+
+  if (useLocalStorage) {
+    updateLocalStorage(localStorageKey, { guidedMode });
+  }
 });
 
 const setFontColors = (darkMode, guidedMode) => {
@@ -569,20 +586,6 @@ const getTestDataAndFillBoard = () => {
       playerBoard,
       apiData,
     });
-
-    // if (Object.keys(storage).includes("userFilled")) {
-    //   updateLocalStorage(localStorageKey, {
-    //     apiData,
-    //   });
-    // } else {
-    //   const userFilled = playerBoard.map((subArray) =>
-    //     subArray.map((elt) => 0)
-    //   );
-    //   updateLocalStorage(localStorageKey, {
-    //     userFilled,
-    //     apiData,
-    //   });
-    // }
   }
 
   fillBoardData(apiData.board);
@@ -596,15 +599,21 @@ generateEmptyBoard();
 if (useLocalStorage && getLocalStorage(localStorageKey)) {
   console.log("game data in local storage");
   storage = getLocalStorage(localStorageKey);
-  apiData = storage.apiData;
-  playerBoard = storage.playerBoard;
+  ({ apiData, playerBoard, numMoves, darkMode, guidedMode } = storage);
 
   fillBoardData(apiData.board);
   fillSavedUserInput();
+
+  darkModeCheckBox.checked = darkMode;
+  guidedModeCheckBox.checked = guidedMode;
+
+  setThemeColors(darkMode, guidedMode);
 } else {
   console.log("no game data in local storage");
   storage = {
     apiData: {},
+    darkMode,
+    guidedMode,
     notes: {},
     numMoves: 0,
     playerBoard: [...Array(boardSize)].map((x) => Array(boardSize).fill(0)),
