@@ -7,16 +7,21 @@ const guidedModeCheckBox = document.querySelector("#guided-mode");
 let numNotes = 3;
 let numMoves = 0;
 let maxMoves;
-let solution;
+// let solution;
 let playerBoard;
 let guidedMode = false;
 let darkMode = false;
 let notesMode = true;
 let cellsToCycle = [];
 let cellCycleIdx = 0;
-let storage = { preFilled: {}, userFilled: {}, notes: {} };
+let apiData;
+let storage;
 let testing = false;
 let localStorageKey = "sudokuGameData";
+let difficulty = "hard";
+let solve = true;
+let useLocalStorage = true;
+let boardSize = 9;
 
 const generateNumberPad = (size = 9) => {
   const numberPad = document.querySelector(".number-pad");
@@ -71,6 +76,11 @@ const generateEmptyBoard = (size = 9) => {
   // }
 };
 
+const deepCopy2DArr = (arr) => {
+  return arr.map((subArr) => subArr.map((elt) => elt));
+};
+
+// fills board with api data
 const fillBoardData = (data) => {
   maxMoves = 0;
   for (let i = 0; i < data.length; i++) {
@@ -83,18 +93,49 @@ const fillBoardData = (data) => {
         // cell.innerHTML = val;
       } else {
         cell.classList.add("to-fill");
+        cell.children[0].innerHTML = "";
         maxMoves++;
       }
     }
   }
-  playerBoard = data;
+
+  // if (useLocalStorage) {
+  //   console.log("storage on");
+  //   storage = getLocalStorage(localStorageKey);
+
+  //   if (storage && Object.keys(storage.notes).length) {
+  //     console.log("populating notes");
+  //     fillSavedUserInput();
+  //   }
+  // }
+};
+
+const fillSavedUserInput = () => {
+  storage = getLocalStorage(localStorageKey);
+
+  const notes = storage.notes;
+  for (let key in notes) {
+    document.getElementById(key).innerHTML = notes[key];
+  }
+
+  const userFilled = storage.userFilled;
+  userFilled.forEach((subArray, i) =>
+    subArray.forEach((val, j) => {
+      if (val) {
+        document.querySelector(
+          `[data-row="${i}"][data-col="${j}"] .cell__num`
+        ).innerHTML = val;
+      }
+    })
+  );
 };
 
 const checkResults = (withAPI = true) => {
   let isCorrect = false;
 
   if (withAPI) {
-    isCorrect = JSON.stringify(playerBoard) === JSON.stringify(solution);
+    isCorrect =
+      JSON.stringify(playerBoard) === JSON.stringify(apiData.solution);
   }
 
   if (isCorrect) {
@@ -110,18 +151,61 @@ const displayMessage = (msg) => {
   messageBar.innerHTML = `<p>${msg}</p>`;
 };
 
-const getNewData = () => {};
+const clearNotes = () => {
+  document.querySelectorAll(".cell__note").forEach((note) => {
+    note.innerHTML = "";
+  });
+};
 
-const resetBoard = () => {};
+const getNewGame = async (difficulty = "hard", solve = true) => {
+  apiData = await getBoardData(difficulty, solve);
+
+  resetBoard();
+  // playerBoard = deepCopy2DArr(apiData.board);
+  // numMoves = 0;
+
+  // if (useLocalStorage) {
+  //   updateLocalStorage(localStorageKey, {
+  //     notes: {},
+  //     numMoves,
+  //     playerBoard,
+  //     userFilled: [...Array(boardSize)].map((x) => Array(boardSize).fill(0)),
+  //   });
+  // }
+};
+
+const resetBoard = () => {
+  // re-populate board with api data
+  fillBoardData(apiData.board);
+
+  // clear notes
+  clearNotes();
+
+  playerBoard = deepCopy2DArr(apiData.board);
+  numMoves = 0;
+
+  if (useLocalStorage) {
+    updateLocalStorage(localStorageKey, {
+      notes: {},
+      numMoves,
+      playerBoard,
+      userFilled: [...Array(boardSize)].map((x) => Array(boardSize).fill(0)),
+    });
+  }
+};
 
 const getDataAndFillBoard = async (difficulty = "hard", solve = true) => {
-  const data = await getBoardData(difficulty, solve);
-  solution = data.solution;
+  apiData = await getBoardData(difficulty, solve);
+  // solution = apiData.solution;
+  playerBoard = deepCopy2DArr(apiData.board);
 
-  storage.apiData = data;
-  updateLocalStorage();
+  if (useLocalStorage) {
+    //   storage.playerBoard = playerBoard;
+    //   storage.apiData = apiData;
+    updateLocalStorage(localStorageKey, { playerBoard, apiData });
+  }
 
-  fillBoardData(data.board);
+  fillBoardData(apiData.board);
 };
 
 /* EVENT LISTENERS AND HANDLERS */
@@ -161,8 +245,23 @@ const editCell = (cell, value) => {
     }
 
     playerBoard[i][j] = Number(value);
+
     // console.log(playerBoard);
-    storage.userFilled[cell.id] = value;
+
+    if (useLocalStorage) {
+      const userFilled = storage.userFilled;
+      console.log(userFilled);
+      userFilled[i][j] = Number(value);
+
+      // storage.playerBoard = playerBoard;
+      // storage.userFilled[cell.id] = value;
+
+      updateLocalStorage(localStorageKey, {
+        userFilled,
+        playerBoard,
+        numMoves,
+      });
+    }
 
     console.log(
       `input: ${value}, numMoves: ${numMoves}, maxMoves: ${maxMoves}`
@@ -177,7 +276,7 @@ const editCell = (cell, value) => {
     cell.classList.remove("correct");
 
     if (Number(value)) {
-      if (solution[i][j] === Number(value)) {
+      if (apiData.solution[i][j] === Number(value)) {
         cell.classList.add("correct");
       } else {
         cell.classList.add("incorrect");
@@ -185,6 +284,18 @@ const editCell = (cell, value) => {
     }
     // }
     setFontColors(darkMode, guidedMode);
+  } else if (cell.classList.contains("cell__note")) {
+    if (useLocalStorage) {
+      const notes = storage.notes;
+      notes[cell.id] = value;
+
+      // storage.playerBoard = playerBoard;
+      // storage.userFilled[cell.id] = value;
+
+      updateLocalStorage(localStorageKey, {
+        notes,
+      });
+    }
   }
 
   // edit cell regardless of number cell or notes cell
@@ -198,6 +309,10 @@ const handleClick = (e) => {
     handleNumPadPress(e);
   } else if (e.target.classList.contains("check-results")) {
     checkResults();
+  } else if (e.target.id === "new-game") {
+    getNewGame(difficulty, solve);
+  } else if (e.target.id === "reset-game") {
+    resetBoard();
   } else {
     deselectCell();
   }
@@ -324,18 +439,21 @@ const handleArrowKeyPress = (keyCode) => {
   }
 };
 
-const updateLocalStorage = () => {
-  console.log("updating local storage to: ");
-  console.log(storage);
+const updateLocalStorage = (key, updateObj) => {
+  storage = { ...storage, ...updateObj };
+
   localStorage.setItem(localStorageKey, JSON.stringify(storage));
+
+  console.log("updating local storage to: ");
+  console.log(getLocalStorage(localStorageKey));
 };
 
-const getLocalStorage = () => {
-  return JSON.parse(localStorage.getItem(localStorageKey));
+const getLocalStorage = (key) => {
+  return JSON.parse(localStorage.getItem(key));
 };
 
-const clearLocalStorage = () => {
-  localStorage.clear(localStorageKey);
+const removeLocalStorage = (key) => {
+  localStorage.remove(key);
 };
 
 body.addEventListener("click", handleClick);
@@ -399,10 +517,8 @@ const setFontColors = (darkMode, guidedMode) => {
   }
 };
 
-/* INITIALIZE GAME */
-
-if (testing) {
-  const sampleData = {
+const getTestDataAndFillBoard = () => {
+  apiData = {
     board: [
       [2, 6, 9, 0, 0, 0, 0, 0, 0],
       [0, 0, 4, 5, 7, 8, 2, 0, 0],
@@ -429,15 +545,58 @@ if (testing) {
     status: "solved",
   };
 
-  solution = sampleData.solution;
-  storage.apiData = sampleData;
-  updateLocalStorage();
+  playerBoard = deepCopy2DArr(apiData.board);
 
-  generateEmptyBoard();
-  fillBoardData(sampleData.board);
+  if (useLocalStorage) {
+    updateLocalStorage(localStorageKey, {
+      playerBoard,
+      apiData,
+    });
+
+    // if (Object.keys(storage).includes("userFilled")) {
+    //   updateLocalStorage(localStorageKey, {
+    //     apiData,
+    //   });
+    // } else {
+    //   const userFilled = playerBoard.map((subArray) =>
+    //     subArray.map((elt) => 0)
+    //   );
+    //   updateLocalStorage(localStorageKey, {
+    //     userFilled,
+    //     apiData,
+    //   });
+    // }
+  }
+
+  fillBoardData(apiData.board);
+};
+
+/* INITIALIZE GAME */
+
+console.log("initializing game");
+generateEmptyBoard();
+
+if (useLocalStorage && getLocalStorage(localStorageKey)) {
+  console.log("game data in local storage");
+  storage = getLocalStorage(localStorageKey);
+  apiData = storage.apiData;
+  playerBoard = storage.playerBoard;
+
+  fillBoardData(apiData.board);
+  fillSavedUserInput();
 } else {
-  generateEmptyBoard();
-  getDataAndFillBoard();
-}
+  console.log("no game data in local storage");
+  storage = {
+    apiData: {},
+    notes: {},
+    numMoves: 0,
+    playerBoard: [...Array(boardSize)].map((x) => Array(boardSize).fill(0)),
+    userFilled: [...Array(boardSize)].map((x) => Array(boardSize).fill(0)),
+  };
 
-// console.log(getLocalStorageData());
+  if (testing) {
+    getTestDataAndFillBoard();
+  } else {
+    getDataAndFillBoard();
+  }
+}

@@ -150,9 +150,19 @@ div[data-row="6"] {
 .control-panel {
   align-items: center;
   display: flex;
-  flex-flow: row wrap;
+  flex-flow: column wrap;
   font-size: 1rem;
   justify-content: space-evenly;
+}
+
+.control--visuals,
+.control--game {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.control {
+  margin: 10px;
 }
 
 @media screen and (max-width: 375px) {
