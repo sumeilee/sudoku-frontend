@@ -3,6 +3,7 @@ const body = document.querySelector("body");
 const messageBar = document.querySelector(".message-bar");
 const darkModeCheckBox = document.querySelector("#dark-mode");
 const guidedModeCheckBox = document.querySelector("#guided-mode");
+const loadingModal = document.querySelector(".modal");
 
 let numNotes = 3;
 let numMoves = 0;
@@ -98,16 +99,6 @@ const fillBoardData = (data) => {
       }
     }
   }
-
-  // if (useLocalStorage) {
-  //   console.log("storage on");
-  //   storage = getLocalStorage(localStorageKey);
-
-  //   if (storage && Object.keys(storage.notes).length) {
-  //     console.log("populating notes");
-  //     fillSavedUserInput();
-  //   }
-  // }
 };
 
 const fillSavedUserInput = () => {
@@ -165,9 +156,13 @@ const clearNotes = () => {
 };
 
 const getNewGame = async (difficulty = "hard", solve = true) => {
+  // generateEmptyBoard();
+  displayLoading(true);
+
   apiData = await getBoardData(difficulty, solve);
   updateLocalStorage(localStorageKey, { apiData });
 
+  displayLoading(false);
   resetBoard();
   // playerBoard = deepCopy2DArr(apiData.board);
   // numMoves = 0;
@@ -202,17 +197,26 @@ const resetBoard = () => {
   }
 };
 
+const displayLoading = (toDisplay = false) => {
+  if (toDisplay) {
+    loadingModal.style.display = "flex";
+  } else {
+    loadingModal.style.display = "none";
+  }
+};
+
 const getDataAndFillBoard = async (difficulty = "hard", solve = true) => {
+  // show loading
+  displayLoading(true);
+
   apiData = await getBoardData(difficulty, solve);
-  // solution = apiData.solution;
   playerBoard = deepCopy2DArr(apiData.board);
 
   if (useLocalStorage) {
-    //   storage.playerBoard = playerBoard;
-    //   storage.apiData = apiData;
     updateLocalStorage(localStorageKey, { playerBoard, apiData });
   }
 
+  displayLoading(false);
   fillBoardData(apiData.board);
 };
 
@@ -489,12 +493,14 @@ const setThemeColors = (darkMode = false, guidedMode = false) => {
     root.style.setProperty("--board-border-color", midLight);
     root.style.setProperty("--number-pad-bg-color", midDark);
     root.style.setProperty("--bg-color-selected", "rgb(220, 220, 220, 0.3)");
+    root.style.setProperty("--bg-color-modal", darkest);
   } else {
     root.style.setProperty("--background-color", "white");
     root.style.setProperty("--notes-background-color", "#efefef");
     root.style.setProperty("--board-border-color", "grey");
     root.style.setProperty("--number-pad-bg-color", "#efefef");
     root.style.setProperty("--bg-color-selected", "lightgrey");
+    root.style.setProperty("--bg-color-modal", "white");
   }
 
   setFontColors(darkMode, guidedMode);
