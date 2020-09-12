@@ -13,7 +13,7 @@ let guidedMode = false;
 let darkMode = false;
 let notesMode = true;
 let cellsToCycle = [];
-let cellCycleIdx = 0;
+let cellCycleIdx;
 let apiData;
 let storage;
 let testing = false;
@@ -229,6 +229,15 @@ const handleSelectCell = (cell, deselectIfSameCell = true) => {
   ) {
     cell.classList.add("cell-selected");
   }
+
+  if (cell.classList.contains("cell__note") && !cellsToCycle.length) {
+    cellsToCycle = [
+      ...cell.parentElement.querySelectorAll(".cell__note"),
+      cell.parentElement.parentElement.querySelector(".cell__num"),
+    ];
+
+    cellCycleIdx = cellsToCycle.indexOf(cell);
+  }
 };
 
 const editCell = (cell, value) => {
@@ -379,6 +388,7 @@ const handleReturnKeyPress = () => {
         selectedCell,
       ];
 
+      cellCycleIdx = 0;
       handleSelectCell(cellsToCycle[cellCycleIdx]);
     }
   }
@@ -386,6 +396,7 @@ const handleReturnKeyPress = () => {
 
 const handleArrowKeyPress = (keyCode) => {
   if (cellsToCycle.length) {
+    console.log("cycling");
     // if currently cycling through notes
     const numCells = cellsToCycle.length;
     let newCell;
@@ -409,6 +420,8 @@ const handleArrowKeyPress = (keyCode) => {
       // console.log(`cycleIdx: ${cellCycleIdx}, newIdx: ${newIdx}`);
 
       newCell = cellsToCycle[newIdx];
+      console.log(newIdx);
+      console.log(newCell);
 
       handleSelectCell(newCell, false);
     }
