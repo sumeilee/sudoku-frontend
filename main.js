@@ -487,7 +487,8 @@ body.addEventListener("keydown", handleKeyPress);
 const setThemeColors = (darkMode = false, guidedMode = false) => {
   if (darkMode) {
     const darkest = "#1b262c"; // dark grey
-    const midDark = "#4f3b78";
+    // const midDark = "#4f3b78";
+    const midDark = "#3a2663";
     const midLight = "#927fbf";
     const lightest = "#c4bbf0";
 

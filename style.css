@@ -63,7 +63,7 @@ button:focus {
 }
 
 .board {
-  border: 3px solid var(--board-border-color);
+  border: 4px solid var(--board-border-color);
   display: inline-grid;
   grid-template-columns: var(--board-grid-config);
   grid-template-rows: var(--board-grid-config);
@@ -89,12 +89,12 @@ button:focus {
 
 div[data-col="3"],
 div[data-col="6"] {
-  border-left: 3px solid var(--board-border-color);
+  border-left: 4px solid var(--board-border-color);
 }
 
 div[data-row="3"],
 div[data-row="6"] {
-  border-top: 3px solid var(--board-border-color);
+  border-top: 4px solid var(--board-border-color);
 }
 
 .cell-selected {
