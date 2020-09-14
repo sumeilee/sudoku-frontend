@@ -90,6 +90,7 @@ const fillBoardData = (data) => {
       const val = data[i][j];
 
       if (val) {
+        cell.classList.remove("to-fill");
         cell.children[0].innerHTML = val;
         // cell.innerHTML = val;
       } else {
