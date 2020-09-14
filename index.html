@@ -7,43 +7,48 @@
     <title>Sudoku</title>
   </head>
   <body>
-    <section class="container">
-      <div class="message-bar"></div>
-      <div class="board-container">
-        <div class="board"></div>
-        <div class="modal">
-          <div class="modal__cover"></div>
-          <div class="modal__content"><p>Loading...</p></div>
+    <main>
+      <section class="container">
+        <div class="message-bar"></div>
+        <div class="board-container">
+          <div class="board"></div>
+          <div class="modal">
+            <div class="modal__cover"></div>
+            <div class="modal__content"><p>Loading...</p></div>
+          </div>
         </div>
-      </div>
-      <div class="number-pad"></div>
-    </section>
+        <div class="number-pad"></div>
+        <div class="clear-pad">
+          <button class="clear-pad__btn">Clear Number</button>
+        </div>
+      </section>
 
-    <section class="control-panel">
-      <div class="control--visuals">
-        <div class="control">
-          <input type="checkbox" id="dark-mode" />
-          <label for="dark-mode">Dark Mode</label>
+      <section class="control-panel">
+        <div class="control--visuals">
+          <div class="control">
+            <input type="checkbox" id="dark-mode" />
+            <label for="dark-mode">Dark Mode</label>
+          </div>
+          <div class="control">
+            <input type="checkbox" id="guided-mode" />
+            <label for="guided-mode">Guided Mode</label>
+          </div>
         </div>
-        <div class="control">
-          <input type="checkbox" id="guided-mode" />
-          <label for="guided-mode">Guided Mode</label>
+        <div class="control--game">
+          <div class="control">
+            <select id="game-difficulty">
+              <option class="easy" value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard" selected>Hard</option>
+            </select>
+            <button id="new-game" class="control__btn">Get New Game</button>
+          </div>
+          <div class="control">
+            <button id="reset-game" class="control__btn">Restart Game</button>
+          </div>
         </div>
-      </div>
-      <div class="control--game">
-        <div class="control">
-          <select id="game-difficulty">
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard" selected>Hard</option>
-          </select>
-          <button id="new-game">Get New Game</button>
-        </div>
-        <div class="control">
-          <button id="reset-game">Restart Current Game</button>
-        </div>
-      </div>
-    </section>
+      </section>
+    </main>
 
     <script src="utils.js"></script>
     <script src="main.js"></script>

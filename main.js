@@ -300,7 +300,7 @@ const editCell = (cell, value) => {
       }
     }
     // }
-    setFontColors(darkMode, guidedMode);
+    setGuidedFontColors(darkMode, guidedMode);
   } else if (cell.classList.contains("cell__note")) {
     if (useLocalStorage) {
       const notes = storage.notes;
@@ -324,8 +324,11 @@ const handleClick = (e) => {
     handleSelectCell(e.target);
   } else if (e.target.classList.contains("number-pad__btn")) {
     handleNumPadPress(e);
-  } else if (e.target.classList.contains("check-results")) {
-    checkResults();
+  } else if (e.target.classList.contains("clear-pad__btn")) {
+    const selectedCell = document.querySelector(".cell-selected");
+    if (selectedCell) {
+      editCell(selectedCell, "");
+    }
   } else if (e.target.id === "new-game") {
     const diffSelect = document.querySelector("#game-difficulty");
     difficulty = diffSelect.options[diffSelect.selectedIndex].value;
@@ -489,21 +492,29 @@ const setThemeColors = (darkMode = false, guidedMode = false) => {
     const lightest = "#c4bbf0";
 
     root.style.setProperty("--background-color", darkest);
+    root.style.setProperty("--font-color", "#c4bbf0");
     root.style.setProperty("--notes-background-color", midDark);
     root.style.setProperty("--board-border-color", midLight);
     root.style.setProperty("--number-pad-bg-color", midDark);
+    root.style.setProperty("--number-pad-font-color", lightest);
+    root.style.setProperty("--control-btn-bg-color", darkest);
+    root.style.setProperty("--control-btn-font-color", lightest);
     root.style.setProperty("--bg-color-selected", "rgb(220, 220, 220, 0.3)");
     root.style.setProperty("--bg-color-modal", darkest);
   } else {
     root.style.setProperty("--background-color", "white");
+    root.style.setProperty("--font-color", "black");
     root.style.setProperty("--notes-background-color", "#efefef");
     root.style.setProperty("--board-border-color", "grey");
-    root.style.setProperty("--number-pad-bg-color", "#efefef");
+    root.style.setProperty("--number-pad-bg-color", "grey");
+    root.style.setProperty("--number-pad-font-color", "white");
+    root.style.setProperty("--control-btn-bg-color", "white");
+    root.style.setProperty("--control-btn-font-color", "black");
     root.style.setProperty("--bg-color-selected", "lightgrey");
     root.style.setProperty("--bg-color-modal", "white");
   }
 
-  setFontColors(darkMode, guidedMode);
+  setGuidedFontColors(darkMode, guidedMode);
 };
 
 darkModeCheckBox.addEventListener("change", () => {
@@ -525,19 +536,15 @@ guidedModeCheckBox.addEventListener("change", () => {
   } else {
     guidedMode = false;
   }
-  setFontColors(darkMode, guidedMode);
+  setGuidedFontColors(darkMode, guidedMode);
 
   if (useLocalStorage) {
     updateLocalStorage(localStorageKey, { guidedMode });
   }
 });
 
-const setFontColors = (darkMode, guidedMode) => {
-  root.style.setProperty("--font-color", "black");
-
+const setGuidedFontColors = (darkMode, guidedMode) => {
   if (darkMode) {
-    root.style.setProperty("--font-color", "#c4bbf0");
-
     if (guidedMode) {
       root.style.setProperty("--correct-color", "#77abb7");
       root.style.setProperty("--incorrect-color", "#f1bbd5");
@@ -547,7 +554,6 @@ const setFontColors = (darkMode, guidedMode) => {
     }
   } else {
     if (guidedMode) {
-      console.log("here");
       root.style.setProperty("--correct-color", "green");
       root.style.setProperty("--incorrect-color", "red");
     } else {
@@ -612,6 +618,14 @@ if (useLocalStorage && getLocalStorage(localStorageKey)) {
 
   darkModeCheckBox.checked = darkMode;
   guidedModeCheckBox.checked = guidedMode;
+
+  document.querySelectorAll("#game-difficulty option").forEach((option) => {
+    if (option.classList.contains(difficulty)) {
+      option.selected = true;
+    } else {
+      option.selected = false;
+    }
+  });
 
   setThemeColors(darkMode, guidedMode);
 } else {
