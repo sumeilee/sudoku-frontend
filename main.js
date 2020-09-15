@@ -4,11 +4,12 @@ const messageBar = document.querySelector(".message-bar");
 const darkModeCheckBox = document.querySelector("#dark-mode");
 const guidedModeCheckBox = document.querySelector("#guided-mode");
 const loadingModal = document.querySelector(".modal");
+const messageCorrect = document.querySelector(".message--correct");
+const messageIncorrect = document.querySelector(".message--incorrect");
 
 let numNotes = 3;
 let numMoves = 0;
 let maxMoves;
-// let solution;
 let playerBoard;
 let guidedMode = false;
 let darkMode = false;
@@ -142,16 +143,16 @@ const checkResults = (withAPI = true) => {
   }
 
   if (isCorrect) {
-    displayMessage("Good job!");
+    messageCorrect.style.display = "block";
+    messageIncorrect.style.display = "none";
   } else {
-    displayMessage("Try again");
+    messageCorrect.style.display = "none";
+    messageIncorrect.style.display = "block";
   }
 
-  return isCorrect;
-};
+  setGuidedFontColors(darkMode, true);
 
-const displayMessage = (msg) => {
-  messageBar.innerHTML = `<p>${msg}</p>`;
+  return isCorrect;
 };
 
 const clearNotes = () => {
@@ -268,11 +269,14 @@ const editCell = (cell, value) => {
       numMoves++;
     } else if (currentCellValue && !value) {
       numMoves--;
+
+      if (numMoves < maxMoves) {
+        messageCorrect.style.display = "none";
+        messageIncorrect.style.display = "none";
+      }
     }
 
     playerBoard[i][j] = Number(value);
-
-    // console.log(playerBoard);
 
     if (useLocalStorage) {
       const userFilled = storage.userFilled;
@@ -288,12 +292,7 @@ const editCell = (cell, value) => {
     console.log(
       `input: ${value}, numMoves: ${numMoves}, maxMoves: ${maxMoves}`
     );
-    if (numMoves === maxMoves) {
-      console.log("results: " + checkResults());
-    }
 
-    // for guided mode
-    // if (guidedMode) {
     cell.classList.remove("incorrect");
     cell.classList.remove("correct");
 
@@ -304,15 +303,17 @@ const editCell = (cell, value) => {
         cell.classList.add("incorrect");
       }
     }
-    // }
+
     setGuidedFontColors(darkMode, guidedMode);
+
+    if (numMoves === maxMoves) {
+      const results = checkResults();
+      console.log("results: " + results);
+    }
   } else if (cell.classList.contains("cell__note")) {
     if (useLocalStorage) {
       const notes = storage.notes;
       notes[cell.id] = value;
-
-      // storage.playerBoard = playerBoard;
-      // storage.userFilled[cell.id] = value;
 
       updateLocalStorage(localStorageKey, {
         notes,
@@ -411,7 +412,6 @@ const handleReturnKeyPress = () => {
 
 const handleArrowKeyPress = (keyCode) => {
   if (cellsToCycle.length) {
-    // console.log("cycling");
     // if currently cycling through notes
     const numCells = cellsToCycle.length;
     let newCell;
@@ -549,9 +549,9 @@ guidedModeCheckBox.addEventListener("change", () => {
   }
 });
 
-const setGuidedFontColors = (darkMode, guidedMode) => {
-  if (darkMode) {
-    if (guidedMode) {
+const setGuidedFontColors = (isDarkMode, isGuidedMode) => {
+  if (isDarkMode) {
+    if (isGuidedMode) {
       root.style.setProperty("--correct-color", "#77abb7");
       root.style.setProperty("--incorrect-color", "#f1bbd5");
     } else {
@@ -559,7 +559,7 @@ const setGuidedFontColors = (darkMode, guidedMode) => {
       root.style.setProperty("--incorrect-color", "#c4bbf0");
     }
   } else {
-    if (guidedMode) {
+    if (isGuidedMode) {
       root.style.setProperty("--correct-color", "green");
       root.style.setProperty("--incorrect-color", "red");
     } else {
