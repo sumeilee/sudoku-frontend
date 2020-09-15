@@ -87,10 +87,14 @@ const fillBoardData = (data) => {
   for (let i = 0; i < data.length; i++) {
     for (let j = 0; j < data[i].length; j++) {
       const cell = document.querySelector(`[data-row="${i}"][data-col="${j}"]`);
+
+      cell.classList.remove("to-fill");
+      cell.children[0].classList.remove("incorrect");
+      cell.children[0].classList.remove("correct");
+
       const val = data[i][j];
 
       if (val) {
-        cell.classList.remove("to-fill");
         cell.children[0].innerHTML = val;
         // cell.innerHTML = val;
       } else {
