@@ -247,14 +247,26 @@ const handleSelectCell = (cell, deselectIfSameCell = true) => {
     cell.classList.add("cell-selected");
   }
 
-  if (cell.classList.contains("cell__note") && !cellsToCycle.length) {
+  if (cell.classList.contains("cell__note")) {
+    if (cellsToCycle.length && !cellsToCycle.includes(cell)) {
+      cellsToCycle = [];
+    }
+
     cellsToCycle = [
       ...cell.parentElement.querySelectorAll(".cell__note"),
       cell.parentElement.parentElement.querySelector(".cell__num"),
     ];
 
+    // console.log(cellsToCycle);
     cellCycleIdx = cellsToCycle.indexOf(cell);
   }
+};
+
+const getCellsToCycle = (cell) => {
+  cellsToCycle = [
+    ...cell.parentElement.querySelectorAll(".cell__note"),
+    cell.parentElement.parentElement.querySelector(".cell__num"),
+  ];
 };
 
 const editCell = (cell, value) => {
@@ -289,9 +301,9 @@ const editCell = (cell, value) => {
       });
     }
 
-    console.log(
-      `input: ${value}, numMoves: ${numMoves}, maxMoves: ${maxMoves}`
-    );
+    // console.log(
+    //   `input: ${value}, numMoves: ${numMoves}, maxMoves: ${maxMoves}`
+    // );
 
     cell.classList.remove("incorrect");
     cell.classList.remove("correct");
@@ -308,7 +320,8 @@ const editCell = (cell, value) => {
 
     if (numMoves === maxMoves) {
       const results = checkResults();
-      console.log("results: " + results);
+
+      // console.log("results: " + results);
     }
   } else if (cell.classList.contains("cell__note")) {
     if (useLocalStorage) {
@@ -338,7 +351,9 @@ const handleClick = (e) => {
   } else if (e.target.id === "new-game") {
     const diffSelect = document.querySelector("#game-difficulty");
     difficulty = diffSelect.options[diffSelect.selectedIndex].value;
-    console.log(`difficulty: ${difficulty}`);
+
+    // console.log(`difficulty: ${difficulty}`);
+
     getNewGame(difficulty, solve);
   } else if (e.target.id === "reset-game") {
     resetBoard();
@@ -474,8 +489,8 @@ const updateLocalStorage = (key, updateObj) => {
 
   localStorage.setItem(localStorageKey, JSON.stringify(storage));
 
-  console.log("updating local storage to: ");
-  console.log(getLocalStorage(localStorageKey));
+  // console.log("updating local storage to: ");
+  // console.log(getLocalStorage(localStorageKey));
 };
 
 const getLocalStorage = (key) => {
@@ -611,11 +626,11 @@ const getTestDataAndFillBoard = () => {
 
 /* INITIALIZE GAME */
 
-console.log("initializing game");
+// console.log("initializing game");
 generateEmptyBoard();
 
 if (useLocalStorage && getLocalStorage(localStorageKey)) {
-  console.log("game data in local storage");
+  // console.log("game data in local storage");
   storage = getLocalStorage(localStorageKey);
   ({ apiData, playerBoard, numMoves, darkMode, guidedMode } = storage);
 
@@ -635,7 +650,7 @@ if (useLocalStorage && getLocalStorage(localStorageKey)) {
 
   setThemeColors(darkMode, guidedMode);
 } else {
-  console.log("no game data in local storage");
+  // console.log("no game data in local storage");
   storage = {
     apiData: {},
     darkMode,
