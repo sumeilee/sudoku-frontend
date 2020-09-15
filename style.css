@@ -73,7 +73,7 @@ button:focus {
 }
 
 .board {
-  border: 4px solid var(--board-border-color);
+  border: 3px solid var(--board-border-color);
   display: inline-grid;
   grid-template-columns: var(--board-grid-config);
   grid-template-rows: var(--board-grid-config);
@@ -99,12 +99,12 @@ button:focus {
 
 div[data-col="3"],
 div[data-col="6"] {
-  border-left: 4px solid var(--board-border-color);
+  border-left: 3px solid var(--board-border-color);
 }
 
 div[data-row="3"],
 div[data-row="6"] {
-  border-top: 4px solid var(--board-border-color);
+  border-top: 3px solid var(--board-border-color);
 }
 
 .cell-selected {
@@ -191,7 +191,7 @@ div[data-row="6"] {
   column-gap: 5px;
   display: grid;
   grid-template-columns: repeat(var(--board-num-grid), 1fr);
-  margin: 15px auto 15px auto;
+  margin: 15px auto 10px auto;
   padding: 0 10px;
   width: 100%;
 }
@@ -202,7 +202,7 @@ div[data-row="6"] {
   border: none;
   color: var(--number-pad-font-color);
   font-size: 1rem;
-  padding: 10px 0;
+  padding: 5px 0;
 }
 
 .clear-pad {
@@ -214,7 +214,7 @@ div[data-row="6"] {
 }
 
 .clear-pad__btn {
-  padding: 10px 20px;
+  padding: 5px 20px;
 }
 
 .control__btn,
@@ -225,7 +225,7 @@ div[data-row="6"] {
   cursor: pointer;
   font-size: 1rem;
   outline: none;
-  padding: 5px 10px;
+  padding: 5px 5px;
 }
 
 #game-difficulty {
@@ -284,5 +284,9 @@ div[data-row="6"] {
   .control__btn,
   #game-difficulty {
     font-size: 0.8rem;
+  }
+
+  .control--visuals .control {
+    margin: 5px;
   }
 }
