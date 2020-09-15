@@ -295,7 +295,7 @@ div[data-row="6"] {
   .game__btn,
   .control__btn,
   #game-difficulty {
-    font-size: 1rem;
+    font-size: 0.8rem;
   }
 
   .control--visuals .control {
