@@ -1,10 +1,12 @@
 const apiURL = "https://sugoku.herokuapp.com";
 
-const getBoardData = async (difficulty = "hard", solve = true) => {
+const getBoardData = async (gameDifficulty = "hard", toSolve = true) => {
   try {
-    const response = await fetch(`${apiURL}/board?difficulty=${difficulty}`);
+    const response = await fetch(
+      `${apiURL}/board?difficulty=${gameDifficulty}`
+    );
     let data = await response.json();
-    // console.log(`getting new ${difficulty} game`);
+    console.log(`getting new ${gameDifficulty} game`);
 
     if (solve) {
       const solvedData = await getSolvedBoardData(data);

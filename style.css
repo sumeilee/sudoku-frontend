@@ -10,7 +10,7 @@
   --notes-background-color: #efefef;
   --number-pad-bg-color: grey;
   --number-pad-font-color: white;
-  --control-btn-bg-color: #efefef;
+  --control-btn-bg-color: var(--background-color);
   --control-btn-font-color: black;
   --font-color: black;
   --correct-color: green;

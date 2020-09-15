@@ -20,7 +20,7 @@ let apiData;
 let storage;
 let testing = false;
 let localStorageKey = "sudokuGameData";
-let difficulty = "hard";
+let difficulty = "easy";
 let solve = true;
 let useLocalStorage = true;
 let boardSize = 9;
@@ -161,26 +161,15 @@ const clearNotes = () => {
   });
 };
 
-const getNewGame = async (difficulty = "hard", solve = true) => {
+const getNewGame = async (gameDifficulty = "hard", toSolve = true) => {
   // generateEmptyBoard();
   displayLoading(true);
 
-  apiData = await getBoardData(difficulty, solve);
+  apiData = await getBoardData(gameDifficulty, toSolve);
   updateLocalStorage(localStorageKey, { apiData });
 
   displayLoading(false);
   resetBoard();
-  // playerBoard = deepCopy2DArr(apiData.board);
-  // numMoves = 0;
-
-  // if (useLocalStorage) {
-  //   updateLocalStorage(localStorageKey, {
-  //     notes: {},
-  //     numMoves,
-  //     playerBoard,
-  //     userFilled: [...Array(boardSize)].map((x) => Array(boardSize).fill(0)),
-  //   });
-  // }
 };
 
 const resetBoard = () => {
@@ -211,11 +200,11 @@ const displayLoading = (toDisplay = false) => {
   }
 };
 
-const getDataAndFillBoard = async (difficulty = "hard", solve = true) => {
+const getDataAndFillBoard = async (gameDifficulty = "hard", toSolve = true) => {
   // show loading
   displayLoading(true);
 
-  apiData = await getBoardData(difficulty, solve);
+  apiData = await getBoardData(gameDifficulty, toSolve);
   playerBoard = deepCopy2DArr(apiData.board);
 
   if (useLocalStorage) {
@@ -664,6 +653,6 @@ if (useLocalStorage && getLocalStorage(localStorageKey)) {
   if (testing) {
     getTestDataAndFillBoard();
   } else {
-    getDataAndFillBoard();
+    getDataAndFillBoard(difficulty, solve);
   }
 }
