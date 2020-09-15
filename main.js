@@ -161,7 +161,14 @@ const clearNotes = () => {
   });
 };
 
+const removeResults = () => {
+  messageCorrect.style.display = "none";
+  messageIncorrect.style.display = "none";
+};
+
 const getNewGame = async (gameDifficulty = "hard", toSolve = true) => {
+  removeResults();
+
   // generateEmptyBoard();
   displayLoading(true);
 
@@ -173,6 +180,8 @@ const getNewGame = async (gameDifficulty = "hard", toSolve = true) => {
 };
 
 const resetBoard = () => {
+  removeResults();
+
   // re-populate board with api data
   fillBoardData(apiData.board);
 
@@ -272,8 +281,7 @@ const editCell = (cell, value) => {
       numMoves--;
 
       if (numMoves < maxMoves) {
-        messageCorrect.style.display = "none";
-        messageIncorrect.style.display = "none";
+        removeResults();
       }
     }
 
