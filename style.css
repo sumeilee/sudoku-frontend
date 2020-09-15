@@ -230,6 +230,11 @@ div[data-row="6"] {
 
 #game-difficulty {
   border-bottom: 1px solid var(--font-color);
+  height: 100%;
+}
+
+#new-game {
+  height: 100%;
 }
 
 .control__btn {
