@@ -285,6 +285,8 @@ const editCell = (cell, value) => {
       }
     }
 
+    cell.innerHTML = value;
+
     playerBoard[i][j] = Number(value);
 
     if (useLocalStorage) {
@@ -321,6 +323,8 @@ const editCell = (cell, value) => {
       // console.log("results: " + results);
     }
   } else if (cell.classList.contains("cell__note")) {
+    cell.innerHTML = value;
+
     if (useLocalStorage) {
       const notes = storage.notes;
       notes[cell.id] = value;
@@ -330,9 +334,6 @@ const editCell = (cell, value) => {
       });
     }
   }
-
-  // edit cell regardless of number cell or notes cell
-  cell.innerHTML = value;
 };
 
 const handleClick = (e) => {
