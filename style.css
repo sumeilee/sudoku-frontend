@@ -6,7 +6,7 @@
   --board-grid-size: calc(var(--board-width) / var(--board-num-grid));
   --board-grid-config: repeat(var(--board-num-grid), var(--board-grid-size));
   --notes-num: 3;
-  --notes-size: 30%;
+  --notes-size: 40%;
   --notes-background-color: #efefef;
   --number-pad-bg-color: grey;
   --number-pad-font-color: white;
@@ -43,6 +43,7 @@ button:focus {
 }
 
 .container {
+  // height: 90vh;
   margin: 0 auto;
   max-width: 475px;
   position: relative;
@@ -76,7 +77,11 @@ button:focus {
   border: 3px solid var(--board-border-color);
   display: inline-grid;
   grid-template-columns: var(--board-grid-config);
-  grid-template-rows: var(--board-grid-config);
+  // grid-template-rows: var(--board-grid-config);
+  grid-template-rows: repeat(
+    var(--board-num-grid),
+    calc(var(--board-grid-size) * 1.2)
+  );
   margin: 0 auto;
   width: var(--board-width);
 }
@@ -200,9 +205,10 @@ div[data-row="6"] {
 .number-pad__btn {
   background-color: var(--number-pad-bg-color);
   border: none;
+  border-radius: 10px;
   color: var(--number-pad-font-color);
   font-size: 1rem;
-  padding: 5px 0;
+  padding: 10px 0;
 }
 
 .clear-pad {
@@ -214,7 +220,8 @@ div[data-row="6"] {
 }
 
 .clear-pad__btn {
-  padding: 5px 20px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .control__btn,
@@ -277,18 +284,18 @@ div[data-row="6"] {
 
 @media screen and (max-width: 375px) {
   .cell__num {
-    font-size: 1rem;
+    font-size: 1.25rem;
   }
 
   .to-fill .cell__note {
-    font-size: 0.6rem;
+    font-size: 0.9rem;
   }
 
   .control-panel,
   .game__btn,
   .control__btn,
   #game-difficulty {
-    font-size: 0.8rem;
+    font-size: 1rem;
   }
 
   .control--visuals .control {
