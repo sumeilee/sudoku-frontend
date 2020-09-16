@@ -3,9 +3,11 @@ const body = document.querySelector("body");
 const messageBar = document.querySelector(".message-bar");
 const darkModeCheckBox = document.querySelector("#dark-mode");
 const guidedModeCheckBox = document.querySelector("#guided-mode");
-const loadingModal = document.querySelector(".modal");
+const loadingModal = document.querySelector(".modal.loading");
+const infoModal = document.querySelector(".modal.info");
 const messageCorrect = document.querySelector(".message--correct");
 const messageIncorrect = document.querySelector(".message--incorrect");
+const diffSelect = document.querySelector("#game-difficulty");
 
 let numNotes = 3;
 let numMoves = 0;
@@ -169,13 +171,12 @@ const removeResults = () => {
 const getNewGame = async (gameDifficulty = "hard", toSolve = true) => {
   removeResults();
 
-  // generateEmptyBoard();
-  displayLoading(true);
+  setDisplay(loadingModal, true);
 
   apiData = await getBoardData(gameDifficulty, toSolve);
   updateLocalStorage(localStorageKey, { apiData });
 
-  displayLoading(false);
+  setDisplay(loadingModal, false);
   resetBoard();
 };
 
@@ -201,17 +202,17 @@ const resetBoard = () => {
   }
 };
 
-const displayLoading = (toDisplay = false) => {
+const setDisplay = (div, toDisplay = false) => {
   if (toDisplay) {
-    loadingModal.style.display = "flex";
+    div.style.display = "flex";
   } else {
-    loadingModal.style.display = "none";
+    div.style.display = "none";
   }
 };
 
 const getDataAndFillBoard = async (gameDifficulty = "hard", toSolve = true) => {
   // show loading
-  displayLoading(true);
+  setDisplay(loadingModal, true);
 
   apiData = await getBoardData(gameDifficulty, toSolve);
   playerBoard = deepCopy2DArr(apiData.board);
@@ -220,7 +221,7 @@ const getDataAndFillBoard = async (gameDifficulty = "hard", toSolve = true) => {
     updateLocalStorage(localStorageKey, { playerBoard, apiData });
   }
 
-  displayLoading(false);
+  setDisplay(loadingModal, false);
   fillBoardData(apiData.board);
 };
 
@@ -347,15 +348,22 @@ const handleClick = (e) => {
       editCell(selectedCell, "");
     }
   } else if (e.target.id === "new-game") {
-    const diffSelect = document.querySelector("#game-difficulty");
     difficulty = diffSelect.options[diffSelect.selectedIndex].value;
-
     // console.log(`difficulty: ${difficulty}`);
-
     getNewGame(difficulty, solve);
   } else if (e.target.id === "reset-game") {
     resetBoard();
+  } else if (
+    e.target.classList.contains("message--info") ||
+    e.target.classList.contains("message--info__icon")
+  ) {
+    if (!infoModal.style.display || infoModal.style.display === "none") {
+      setDisplay(infoModal, true);
+    } else {
+      setDisplay(infoModal, false);
+    }
   } else {
+    setDisplay(infoModal, false);
     deselectCell();
   }
 };

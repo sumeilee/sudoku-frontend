@@ -28,12 +28,54 @@
           <div class="message--incorrect">
             <i class="fas fa-times"></i>
           </div>
+          <div class="message--info">
+            <i class="far fa-question-circle message--info__icon"></i>
+          </div>
         </div>
         <div class="board-container">
           <div class="board"></div>
-          <div class="modal">
-            <div class="modal__cover"></div>
-            <div class="modal__content"><p>Loading...</p></div>
+          <div class="modal loading">
+            <div class="modal__cover loading"></div>
+            <div class="modal__content loading"><p>Loading...</p></div>
+          </div>
+          <div class="modal info">
+            <div class="modal__cover info"></div>
+            <div class="modal__content info">
+              <div>
+                <h3>Filling the Board</h3>
+                <ol>
+                  <li>
+                    Select/highlight an empty cell by clicking on it. To
+                    unselect the cell, click it again.
+                  </li>
+                  <li>
+                    Type in a number or click a number on the number pad below
+                    the board while the cell is selected.
+                  </li>
+                  <li>
+                    To delete a number, hit the Delete key or click the "Clear
+                    Number" button while the cell is selected.
+                  </li>
+                  <li>Results will be displayed when the board is filled.</li>
+                </ol>
+
+                <h3>Keyboard Navigation</h3>
+                <ol>
+                  <li>
+                    Click on an empty cell on the board, then use the arrow keys
+                    to traverse the board.
+                  </li>
+                  <li>
+                    To select notes, hit the Return key and use the Left & Right
+                    arrow keys to cycle through the notes.
+                  </li>
+                  <li>
+                    To exit the notes and return to traverse the board with
+                    arrow keys, hit Return again.
+                  </li>
+                </ol>
+              </div>
+            </div>
           </div>
         </div>
         <div class="number-pad"></div>
