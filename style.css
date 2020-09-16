@@ -82,11 +82,7 @@ button:focus {
   border: 3px solid var(--board-border-color);
   display: inline-grid;
   grid-template-columns: var(--board-grid-config);
-  // grid-template-rows: var(--board-grid-config);
-  grid-template-rows: repeat(
-    var(--board-num-grid),
-    calc(var(--board-grid-size) * 1.2)
-  );
+  grid-template-rows: var(--board-grid-config);
   margin: 0 auto;
   width: var(--board-width);
 }
@@ -306,6 +302,13 @@ div[data-row="6"] {
 }
 
 @media screen and (max-width: 375px) {
+  .board {
+    grid-template-rows: repeat(
+      var(--board-num-grid),
+      calc(var(--board-grid-size) * 1.2)
+    );
+  }
+
   .cell__num {
     font-size: 1.25rem;
   }
