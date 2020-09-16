@@ -1,8 +1,10 @@
 # sudoku-frontend
 
-This project recreates the frontend for Sudoku and focuses on providing a user-friendly interface.
+Live site: https://sumeilee.github.io/sudoku-frontend/
 
-Features include:
+This project obtains Sudoku puzzle & solution data from an [API](https://github.com/berto/sugoku) and recreates the front-end for the game, with a focus on providing a user-friendly interface.
+
+Features:
 
 - Notes section for keeping track of candidate answers
 - Guided mode for real-time grading of each response
@@ -11,4 +13,4 @@ Features include:
 - Keyboard navigation around board
 - Game state retention in local storage
 
-Data for the puzzle (initial board configuration and solution) are obtained through the API provided by https://github.com/berto/sugoku.
+Technologies used: HTML, CSS, Javascript
