@@ -235,7 +235,7 @@ const deselectCell = () => {
   return selectedCell;
 };
 
-const handleSelectCell = (cell, deselectIfSameCell = true) => {
+const handleSelectCell = (cell, eventType, deselectIfSameCell = true) => {
   const prevCell = deselectCell();
 
   if (
@@ -258,6 +258,8 @@ const handleSelectCell = (cell, deselectIfSameCell = true) => {
 
     // console.log(cellsToCycle);
     cellCycleIdx = cellsToCycle.indexOf(cell);
+  } else if (eventType === "click") {
+    cellsToCycle = [];
   }
 };
 
@@ -339,7 +341,7 @@ const editCell = (cell, value) => {
 
 const handleClick = (e) => {
   if (e.target.closest(".to-fill")) {
-    handleSelectCell(e.target);
+    handleSelectCell(e.target, "click");
   } else if (e.target.classList.contains("number-pad__btn")) {
     handleNumPadPress(e);
   } else if (e.target.classList.contains("clear-pad__btn")) {
@@ -415,7 +417,8 @@ const handleReturnKeyPress = () => {
 
       if (!selectedCell.classList.contains("cell__num")) {
         handleSelectCell(
-          selectedCell.parentElement.parentElement.querySelector(".cell__num")
+          selectedCell.parentElement.parentElement.querySelector(".cell__num"),
+          "keyDown"
         );
       }
     } else {
@@ -426,7 +429,7 @@ const handleReturnKeyPress = () => {
       ];
 
       cellCycleIdx = 0;
-      handleSelectCell(cellsToCycle[cellCycleIdx]);
+      handleSelectCell(cellsToCycle[cellCycleIdx], "keyDown");
     }
   }
 };
@@ -457,7 +460,7 @@ const handleArrowKeyPress = (keyCode) => {
 
       newCell = cellsToCycle[newIdx];
 
-      handleSelectCell(newCell, false);
+      handleSelectCell(newCell, "keyDown", false);
     }
   } else {
     // traverse all number cells
@@ -485,7 +488,7 @@ const handleArrowKeyPress = (keyCode) => {
         `[data-row="${i}"][data-col="${j}"] .cell__num`
       );
 
-      handleSelectCell(newCell, false);
+      handleSelectCell(newCell, "keyDown", false);
     }
   }
 };
