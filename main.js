@@ -398,6 +398,7 @@ const handleKeyPress = (e) => {
     }
   } else if (keyPressed >= 37 && keyPressed <= 40) {
     // if arrow key pressed
+    e.preventDefault();
     handleArrowKeyPress(keyPressed);
   } else if (keyPressed === 13 && notesMode) {
     // if return key pressed and notes mode is on
