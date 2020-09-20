@@ -136,6 +136,21 @@ const fillSavedUserInput = () => {
   );
 };
 
+const getDataAndFillBoard = async (gameDifficulty = "hard", toSolve = true) => {
+  // show loading
+  setDisplay(loadingModal, true);
+
+  apiData = await getBoardData(gameDifficulty, toSolve);
+  playerBoard = deepCopy2DArr(apiData.board);
+
+  if (useLocalStorage) {
+    updateLocalStorage(localStorageKey, { playerBoard, apiData });
+  }
+
+  setDisplay(loadingModal, false);
+  fillBoardData(apiData.board);
+};
+
 const checkResults = (withAPI = true) => {
   let isCorrect = false;
 
@@ -210,19 +225,79 @@ const setDisplay = (div, toDisplay = false) => {
   }
 };
 
-const getDataAndFillBoard = async (gameDifficulty = "hard", toSolve = true) => {
-  // show loading
-  setDisplay(loadingModal, true);
+/* SETTING THEME COLORS */
 
-  apiData = await getBoardData(gameDifficulty, toSolve);
-  playerBoard = deepCopy2DArr(apiData.board);
+const setGuidedFontColors = (isDarkMode, isGuidedMode) => {
+  if (isDarkMode) {
+    if (isGuidedMode) {
+      root.style.setProperty("--correct-color", "#77abb7");
+      root.style.setProperty("--incorrect-color", "#f1bbd5");
+    } else {
+      root.style.setProperty("--correct-color", "#c4bbf0");
+      root.style.setProperty("--incorrect-color", "#c4bbf0");
+    }
+  } else {
+    if (isGuidedMode) {
+      root.style.setProperty("--correct-color", "green");
+      root.style.setProperty("--incorrect-color", "red");
+    } else {
+      root.style.setProperty("--correct-color", "black");
+      root.style.setProperty("--incorrect-color", "black");
+    }
+  }
+};
 
-  if (useLocalStorage) {
-    updateLocalStorage(localStorageKey, { playerBoard, apiData });
+const setThemeColors = (darkMode = false, guidedMode = false) => {
+  if (darkMode) {
+    const darkest = "#1b262c"; // dark grey
+    // const midDark = "#4f3b78";
+    const midDark = "#3a2663";
+    const midLight = "#927fbf";
+    const lightest = "#c4bbf0";
+
+    root.style.setProperty("--background-color", darkest);
+    root.style.setProperty("--font-color", "#c4bbf0");
+    root.style.setProperty("--notes-background-color", midDark);
+    root.style.setProperty("--board-border-color", midLight);
+    root.style.setProperty("--number-pad-bg-color", midDark);
+    root.style.setProperty("--number-pad-font-color", lightest);
+    root.style.setProperty("--control-btn-bg-color", darkest);
+    root.style.setProperty("--control-btn-font-color", lightest);
+    root.style.setProperty("--bg-color-selected", "rgb(220, 220, 220, 0.3)");
+    root.style.setProperty("--bg-color-modal", darkest);
+  } else {
+    root.style.setProperty("--background-color", "white");
+    root.style.setProperty("--font-color", "black");
+    root.style.setProperty("--notes-background-color", "#efefef");
+    root.style.setProperty("--board-border-color", "grey");
+    root.style.setProperty("--number-pad-bg-color", "grey");
+    root.style.setProperty("--number-pad-font-color", "white");
+    root.style.setProperty("--control-btn-bg-color", "white");
+    root.style.setProperty("--control-btn-font-color", "black");
+    root.style.setProperty("--bg-color-selected", "lightgrey");
+    root.style.setProperty("--bg-color-modal", "white");
   }
 
-  setDisplay(loadingModal, false);
-  fillBoardData(apiData.board);
+  setGuidedFontColors(darkMode, guidedMode);
+};
+
+/* LOCAL STORAGE FUNCTIONS */
+
+const updateLocalStorage = (key, updateObj) => {
+  storage = { ...storage, ...updateObj };
+
+  localStorage.setItem(localStorageKey, JSON.stringify(storage));
+
+  // console.log("updating local storage to: ");
+  // console.log(getLocalStorage(localStorageKey));
+};
+
+const getLocalStorage = (key) => {
+  return JSON.parse(localStorage.getItem(key));
+};
+
+const removeLocalStorage = (key) => {
+  localStorage.remove(key);
 };
 
 /* EVENT LISTENERS AND HANDLERS */
@@ -494,59 +569,8 @@ const handleArrowKeyPress = (keyCode) => {
   }
 };
 
-const updateLocalStorage = (key, updateObj) => {
-  storage = { ...storage, ...updateObj };
-
-  localStorage.setItem(localStorageKey, JSON.stringify(storage));
-
-  // console.log("updating local storage to: ");
-  // console.log(getLocalStorage(localStorageKey));
-};
-
-const getLocalStorage = (key) => {
-  return JSON.parse(localStorage.getItem(key));
-};
-
-const removeLocalStorage = (key) => {
-  localStorage.remove(key);
-};
-
 body.addEventListener("click", handleClick);
 body.addEventListener("keydown", handleKeyPress);
-
-const setThemeColors = (darkMode = false, guidedMode = false) => {
-  if (darkMode) {
-    const darkest = "#1b262c"; // dark grey
-    // const midDark = "#4f3b78";
-    const midDark = "#3a2663";
-    const midLight = "#927fbf";
-    const lightest = "#c4bbf0";
-
-    root.style.setProperty("--background-color", darkest);
-    root.style.setProperty("--font-color", "#c4bbf0");
-    root.style.setProperty("--notes-background-color", midDark);
-    root.style.setProperty("--board-border-color", midLight);
-    root.style.setProperty("--number-pad-bg-color", midDark);
-    root.style.setProperty("--number-pad-font-color", lightest);
-    root.style.setProperty("--control-btn-bg-color", darkest);
-    root.style.setProperty("--control-btn-font-color", lightest);
-    root.style.setProperty("--bg-color-selected", "rgb(220, 220, 220, 0.3)");
-    root.style.setProperty("--bg-color-modal", darkest);
-  } else {
-    root.style.setProperty("--background-color", "white");
-    root.style.setProperty("--font-color", "black");
-    root.style.setProperty("--notes-background-color", "#efefef");
-    root.style.setProperty("--board-border-color", "grey");
-    root.style.setProperty("--number-pad-bg-color", "grey");
-    root.style.setProperty("--number-pad-font-color", "white");
-    root.style.setProperty("--control-btn-bg-color", "white");
-    root.style.setProperty("--control-btn-font-color", "black");
-    root.style.setProperty("--bg-color-selected", "lightgrey");
-    root.style.setProperty("--bg-color-modal", "white");
-  }
-
-  setGuidedFontColors(darkMode, guidedMode);
-};
 
 darkModeCheckBox.addEventListener("change", () => {
   if (darkModeCheckBox.checked) {
@@ -574,26 +598,7 @@ guidedModeCheckBox.addEventListener("change", () => {
   }
 });
 
-const setGuidedFontColors = (isDarkMode, isGuidedMode) => {
-  if (isDarkMode) {
-    if (isGuidedMode) {
-      root.style.setProperty("--correct-color", "#77abb7");
-      root.style.setProperty("--incorrect-color", "#f1bbd5");
-    } else {
-      root.style.setProperty("--correct-color", "#c4bbf0");
-      root.style.setProperty("--incorrect-color", "#c4bbf0");
-    }
-  } else {
-    if (isGuidedMode) {
-      root.style.setProperty("--correct-color", "green");
-      root.style.setProperty("--incorrect-color", "red");
-    } else {
-      root.style.setProperty("--correct-color", "black");
-      root.style.setProperty("--incorrect-color", "black");
-    }
-  }
-};
-
+// function for testing
 const getTestDataAndFillBoard = () => {
   apiData = {
     board: [
