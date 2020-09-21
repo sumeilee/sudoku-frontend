@@ -346,7 +346,10 @@ const getCellsToCycle = (cell) => {
 };
 
 const editCell = (cell, value) => {
-  if (cell.classList.contains("cell__num")) {
+  if (
+    cell.classList.contains("cell__num") &&
+    cell.parentElement.classList.contains("to-fill")
+  ) {
     // update moves and scoreboard only if number cell
     const i = cell.parentElement.dataset.row;
     const j = cell.parentElement.dataset.col;
